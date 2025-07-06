@@ -1,0 +1,113 @@
+.scan-result-panel {
+  position: relative;
+  min-height: 200px;
+  padding: 1.5rem;
+  background-color: var(--color-gray-50, #f9fafb);
+  border-radius: 0.5rem;
+}
+
+/* 요약 섹션 */
+.scan-result-panel__summary {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.scan-result-panel__title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-gray-900, #111827);
+}
+
+.scan-result-panel__subtitle {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-gray-600, #4b5563);
+}
+
+/* 카드 그리드 */
+.scan-result-panel__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* CollapsibleSection 내의 헤더 버튼 스타일 */
+.collapsible-section__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.collapsible-section__title-button {
+  flex-grow: 1;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.collapsible-section__title-button:hover {
+  color: var(--color-primary);
+}
+
+/* 진행률 표시 */
+.scan-result-panel__progress {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.scan-result-panel__progress-text {
+  font-size: 0.75rem;
+  color: var(--color-gray-600, #4b5563);
+  text-align: center;
+}
+
+/* 상태별 스타일 */
+.scan-result-panel--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--color-gray-500, #6b7280);
+}
+
+.scan-result-panel--error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: var(--color-danger, #ef4444);
+  text-align: center;
+}
+
+.scan-result-panel--error svg {
+  width: 48px;
+  height: 48px;
+  opacity: 0.5;
+}
+
+/* 깨끗한 상태 메시지 */
+.scan-result-panel__clean-message {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: var(--color-success-50, #f0fdf4);
+  border: 1px solid var(--color-success-200, #bbf7d0);
+  border-radius: 0.375rem;
+  text-align: center;
+  color: var(--color-success-700, #15803d);
+  font-weight: 500;
+}

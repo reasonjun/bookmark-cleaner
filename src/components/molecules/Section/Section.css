@@ -1,0 +1,103 @@
+.section-component {
+  border: 1px solid var(--color-gray-200);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.section-component__header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 12px 16px;
+  background-color: var(--color-gray-100);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+.section-component__title-wrapper {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  gap: 8px;
+}
+
+.section-component__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-component__count {
+  font-size: 0.85rem;
+  color: var(--color-gray-600);
+}
+
+.section-component__content {
+  padding: 16px;
+  background-color: #fff;
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.section-component__content ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.section-component__content li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: var(--color-gray-700);
+}
+
+.section-component__content li:last-child {
+  margin-bottom: 0;
+}
+
+.section-component__content li input[type='checkbox'] {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.section-component__content li a {
+  color: var(--color-primary);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.section-component__content li a:hover {
+  text-decoration: underline;
+}
+
+/* Disabled state */
+.section-component--disabled {
+  background-color: var(--color-gray-50);
+  color: var(--color-gray-500);
+  cursor: default; /* 마우스 오버 시 커서 변경 없음 */
+}
+
+.section-component--disabled .section-component__header {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-500); /* 제목 회색 처리 */
+}
+
+.section-component--disabled .section-component__count {
+  color: var(--color-gray-400);
+}
+
+.section-component--disabled .section-component__content {
+  background-color: var(--color-gray-50);
+  color: var(--color-gray-500);
+}
+
+.section-component__empty-message {
+  text-align: center;
+  color: var(--color-gray-500);
+  font-style: italic;
+  padding: 16px 0;
+  margin: 0;
+}

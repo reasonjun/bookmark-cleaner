@@ -1,0 +1,61 @@
+.progress-bar-container {
+  width: 100%;
+  background-color: var(--color-gray-200, #e5e7eb);
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar {
+  height: 100%;
+  transition: width 0.3s ease;
+  border-radius: 9999px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 색상 변형 */
+.progress-bar--primary {
+  background-color: var(--color-primary, #3b82f6);
+}
+
+.progress-bar--success {
+  background-color: var(--color-success, #10b981);
+}
+
+.progress-bar--warning {
+  background-color: var(--color-warning, #f59e0b);
+}
+
+.progress-bar--danger {
+  background-color: var(--color-danger, #ef4444);
+}
+
+/* 줄무늬 패턴 */
+.progress-bar--striped {
+  background-image: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.15) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0.15) 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: 1rem 1rem;
+}
+
+/* 애니메이션 */
+.progress-bar--animated {
+  animation: progress-bar-stripes 1s linear infinite;
+}
+
+@keyframes progress-bar-stripes {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 1rem 0;
+  }
+}

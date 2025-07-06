@@ -1,0 +1,88 @@
+/* CSS 변수 정의 */
+:root {
+  /* Primary Colors */
+  --color-primary: #3b82f6;
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+
+  /* Success Colors */
+  --color-success: #10b981;
+  --color-success-50: #f0fdf4;
+  --color-success-100: #d1fae5;
+  --color-success-200: #a7f3d0;
+  --color-success-700: #15803d;
+  --color-success-800: #065f46;
+
+  /* Warning Colors */
+  --color-warning: #f59e0b;
+  --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
+  --color-warning-800: #92400e;
+
+  /* Danger Colors */
+  --color-danger: #ef4444;
+  --color-danger-100: #fee2e2;
+  --color-danger-200: #fecaca;
+  --color-danger-800: #991b1b;
+
+  /* Gray Colors */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+
+  /* Other Colors */
+  --color-blue-50: #eff6ff;
+}
+
+/* 기본 스타일 리셋 */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 400px;
+  min-height: 500px;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-width: 400px;
+  min-height: 500px;
+}
+
+/* 포커스 스타일 */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* 디자인 시스템 스타일 오버라이드 (필요한 경우) */
+button {
+  font-family: inherit;
+}
+
+input[type='checkbox'] {
+  cursor: pointer;
+}
