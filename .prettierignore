@@ -1,0 +1,10 @@
+dist/
+build/
+node_modules/
+*.min.js
+*.min.css
+coverage/
+.nyc_output/
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
