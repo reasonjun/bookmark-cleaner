@@ -6,7 +6,7 @@ import type {
   CleanupResult,
   CleanupStats,
   SelectableCleanupResult,
-} from './bookmark';
+} from '@/types/bookmark';
 
 /**
  * Chrome 메시지 타입들

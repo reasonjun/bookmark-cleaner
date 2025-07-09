@@ -1,4 +1,4 @@
-import type { CleanupStats, SelectableCleanupResult } from '../types/bookmark';
+import type { CleanupStats, SelectableCleanupResult } from '@/types/bookmark';
 
 /**
  * 빈 폴더들을 삭제합니다.

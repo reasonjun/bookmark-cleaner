@@ -1,7 +1,7 @@
-import type { CleanupResult, DuplicateBookmark } from '../types/bookmark';
+import type { CleanupResult, DuplicateBookmark } from '@/types/bookmark';
 
 /**
- * 북마크 트리를 재귀적으로 순회하합니다.
+ * 북마크 트리를 재귀적으로 순회 합니다.
  */
 export function analyzeBookmarkTree(
   node: chrome.bookmarks.BookmarkTreeNode

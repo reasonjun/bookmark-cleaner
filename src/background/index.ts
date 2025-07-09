@@ -1,10 +1,10 @@
-import { bookmarkService } from '../services/bookmarkService';
+import { bookmarkService } from '@/services/bookmarkService';
 import {
   backupBookmarks,
   performCleanup,
   restoreBookmarks,
-} from '../utils/bookmarkCleaner';
-import type { CleanupResult, SelectableCleanupResult } from '../types/bookmark';
+} from '@/utils/bookmarkCleaner';
+import type { CleanupResult, SelectableCleanupResult } from '@/types/bookmark';
 
 // 메시지 타입 정의
 interface ScanMessage {

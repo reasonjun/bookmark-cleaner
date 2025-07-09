@@ -2,7 +2,7 @@
  * 컴포넌트들을 위한 타입 정의
  */
 
-import type { SelectableCleanupResult } from './bookmark';
+import type { SelectableCleanupResult } from '@/types/bookmark';
 
 /**
  * 탭 관련 타입

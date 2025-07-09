@@ -5,21 +5,21 @@ import {
   ScanResultPanel,
   TabGroup,
   type TabItem,
-} from '../components';
+} from '@/components';
 import type {
   CleanupOptions,
   CleanupStats,
   SelectableCleanupResult,
-} from '../types/bookmark';
-import { chromeMessageService } from '../services/chromeMessageService';
+} from '@/types/bookmark';
+import { chromeMessageService } from '@/services/chromeMessageService';
 import {
   transformToSelectableResult,
   filterCheckedItems,
   calculateCheckedCount,
   hasCleanupPossibleItems,
   updateItemCheckState,
-} from '../utils/dataTransformers';
-import { downloadBackupFile } from '../utils/fileDownloader';
+} from '@/utils/dataTransformers';
+import { downloadBackupFile } from '@/utils/fileDownloader';
 import './Popup.css';
 
 export const Popup = () => {

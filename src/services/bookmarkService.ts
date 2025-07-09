@@ -1,8 +1,8 @@
-import type { CleanupResult, ErrorPageBookmark } from '../types/bookmark';
+import type { CleanupResult, ErrorPageBookmark } from '@/types/bookmark';
 import {
   analyzeBookmarkTree,
   extractAllBookmarks,
-} from '../utils/bookmarkAnalyzer';
+} from '@/utils/bookmarkAnalyzer';
 
 export class BookmarkService {
   /**

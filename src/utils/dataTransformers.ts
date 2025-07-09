@@ -3,7 +3,7 @@ import type {
   SelectableCleanupResult,
   DuplicateBookmark,
   ErrorPageBookmark,
-} from '../types/bookmark';
+} from '@/types/bookmark';
 
 /**
  * 스캔 결과를 선택 가능한 형태로 변환합니다.
