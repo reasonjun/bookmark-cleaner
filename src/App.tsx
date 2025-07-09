@@ -1,5 +1,8 @@
+import { Popup } from './popup/Popup';
+import './popup/index.css';
+
 function App() {
-  return <h1>Hello, World!</h1>;
+  return <Popup />;
 }
 
 export default App;
