@@ -11,6 +11,15 @@ import type {
   CleanupStats,
   SelectableCleanupResult,
 } from '../types/bookmark';
+import { chromeMessageService } from '../services/chromeMessageService';
+import {
+  transformToSelectableResult,
+  filterCheckedItems,
+  calculateCheckedCount,
+  hasCleanupPossibleItems,
+  updateItemCheckState,
+} from '../utils/dataTransformers';
+import { downloadBackupFile } from '../utils/fileDownloader';
 import './Popup.css';
 
 export const Popup = () => {
@@ -38,18 +47,10 @@ export const Popup = () => {
   }, [activeTab]);
 
   // 정리 가능한 항목이 있는지 확인
-  const isCleanupPossible = selectableCleanupItems
-    ? selectableCleanupItems.emptyFolders.some(f => f.isChecked) ||
-      selectableCleanupItems.duplicateUrls.some(d => d.isChecked) ||
-      selectableCleanupItems.errorPages.some(e => e.isChecked)
-    : false;
+  const isCleanupPossible = hasCleanupPossibleItems(selectableCleanupItems);
 
   // 선택된 항목의 총 개수 계산
-  const checkedIssuesCount = selectableCleanupItems
-    ? selectableCleanupItems.emptyFolders.filter(f => f.isChecked).length +
-      selectableCleanupItems.duplicateUrls.filter(d => d.isChecked).length +
-      selectableCleanupItems.errorPages.filter(e => e.isChecked).length
-    : 0;
+  const checkedIssuesCount = calculateCheckedCount(selectableCleanupItems);
 
   const handleItemCheckChange = (
     category: keyof SelectableCleanupResult,
@@ -60,20 +61,7 @@ export const Popup = () => {
 
     setSelectableCleanupItems(prevItems => {
       if (!prevItems) return null;
-
-      const updatedCategory = prevItems[category].map((item: any) => {
-        // DuplicateUrls는 bookmark.id가 아닌 url로 구분
-        if (category === 'duplicateUrls') {
-          return item.url === id ? { ...item, isChecked } : item;
-        } else {
-          return item.id === id ? { ...item, isChecked } : item;
-        }
-      });
-
-      return {
-        ...prevItems,
-        [category]: updatedCategory,
-      };
+      return updateItemCheckState(prevItems, category, id, isChecked);
     });
   };
 
@@ -86,25 +74,9 @@ export const Popup = () => {
   const handleScan = async () => {
     setIsScanning(true);
     try {
-      const response = await chrome.runtime.sendMessage({ action: 'scan' });
-      if (response.success) {
-        // 스캔 결과를 선택 가능한 항목으로 변환하고 모두 기본적으로 체크
-        const selectableResult: SelectableCleanupResult = {
-          emptyFolders: response.result.emptyFolders.map((folder: any) => ({
-            ...folder,
-            isChecked: true,
-          })),
-          duplicateUrls: response.result.duplicateUrls.map((item: any) => ({
-            ...item,
-            isChecked: true,
-          })),
-          errorPages: response.result.errorPages.map((item: any) => ({
-            ...item,
-            isChecked: true,
-          })),
-        };
-        setSelectableCleanupItems(selectableResult);
-      }
+      const scanResult = await chromeMessageService.requestScan();
+      const selectableResult = transformToSelectableResult(scanResult);
+      setSelectableCleanupItems(selectableResult);
     } catch (error) {
       console.error('Scan failed:', error);
     } finally {
@@ -117,39 +89,15 @@ export const Popup = () => {
 
     setIsProcessing(true);
     try {
-      // 체크된 항목만 필터링하여 전송
-      const itemsToCleanup = {
-        emptyFolders: selectableCleanupItems.emptyFolders.filter(
-          f => f.isChecked
-        ),
-        duplicateUrls: selectableCleanupItems.duplicateUrls.filter(
-          d => d.isChecked
-        ),
-        errorPages: selectableCleanupItems.errorPages.filter(e => e.isChecked),
-      };
+      const itemsToCleanup = filterCheckedItems(selectableCleanupItems);
+      const { stats, updatedResult } =
+        await chromeMessageService.requestCleanup(itemsToCleanup);
 
-      const response = await chrome.runtime.sendMessage({
-        action: 'cleanup',
-        items: itemsToCleanup,
-      });
-      if (response.success) {
-        setLastCleanupStats(response.stats);
-        // 정리 후 selectableCleanupItems도 업데이트
-        const updatedSelectableResult: SelectableCleanupResult = {
-          emptyFolders: response.updatedResult.emptyFolders.map(
-            (folder: any) => ({ ...folder, isChecked: true })
-          ),
-          duplicateUrls: response.updatedResult.duplicateUrls.map(
-            (item: any) => ({ ...item, isChecked: true })
-          ),
-          errorPages: response.updatedResult.errorPages.map((item: any) => ({
-            ...item,
-            isChecked: true,
-          })),
-        };
-        setSelectableCleanupItems(updatedSelectableResult);
-        setActiveTab('history');
-      }
+      setLastCleanupStats(stats);
+      const updatedSelectableResult =
+        transformToSelectableResult(updatedResult);
+      setSelectableCleanupItems(updatedSelectableResult);
+      setActiveTab('history');
     } catch (error) {
       console.error('Cleanup failed:', error);
     } finally {
@@ -161,19 +109,8 @@ export const Popup = () => {
     if (!chrome.runtime?.id) return;
 
     try {
-      const response = await chrome.runtime.sendMessage({ action: 'backup' });
-      if (response.success) {
-        // 백업 데이터를 다운로드
-        const blob = new Blob([response.backupData], {
-          type: 'application/json',
-        });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `bookmark-backup-${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-      }
+      const backupData = await chromeMessageService.requestBackup();
+      downloadBackupFile(backupData);
     } catch (error) {
       console.error('Backup failed:', error);
     }

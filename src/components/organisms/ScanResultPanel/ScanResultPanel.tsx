@@ -2,6 +2,7 @@ import { LoadingOverlay, CollapsibleSection, Section } from '../../molecules';
 import { ProgressBar } from '../../atoms';
 import { Checkbox } from '@reasonjun/design-system-app';
 import type { SelectableCleanupResult } from '../../../types/bookmark';
+import type { SelectableItemUnion } from '../../../types/components';
 import './ScanResultPanel.css';
 
 // 아이콘 컴포넌트 (임시)
@@ -95,10 +96,15 @@ export const ScanResultPanel = ({
   ) => {
     if (!scanResult) return;
     // Call onItemCheckChange for each item in the category
-    scanResult[category].forEach((item: any) => {
+    scanResult[category].forEach((item: SelectableItemUnion) => {
       // Use appropriate ID for each category
       const id =
-        category === 'duplicateUrls' ? item.url : item.id || item.bookmark.id;
+        category === 'duplicateUrls'
+          ? (item as SelectableCleanupResult['duplicateUrls'][number]).url
+          : 'id' in item
+            ? item.id
+            : (item as SelectableCleanupResult['errorPages'][number]).bookmark
+                .id;
       onItemCheckChange(category, id, checked);
     });
   };
