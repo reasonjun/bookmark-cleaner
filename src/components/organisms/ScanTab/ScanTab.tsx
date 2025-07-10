@@ -3,10 +3,8 @@ import { LoadingOverlay, CollapsibleSection, Section } from '../../molecules';
 import { ProgressBar } from '../../atoms';
 import type { SelectableCleanupResult } from '@/types/bookmark';
 import type { SelectableItemUnion } from '@/types/components';
-import {
-  groupErrorPagesByCategory,
-  ERROR_CATEGORY_ORDER,
-} from '@/utils/errorMessages';
+import { groupErrorPagesByCategory } from '@/utils/errorMessages';
+import { ERROR_CATEGORY_ORDER } from '@/constants';
 import './ScanTab.css';
 
 // 아이콘 컴포넌트 (임시)

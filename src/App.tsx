@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
-import { TabGroup, type TabItem } from '@/components';
+import { TabGroup } from '@/components';
 import { ScanTab } from '@/components/organisms/ScanTab';
 import { SettingsTab } from '@/components/organisms/SettingsTab';
 import { HistoryTab } from '@/components/organisms/HistoryTab';
 import type { CleanupOptions, SelectableCleanupResult } from '@/types/bookmark';
-import { chromeMessageService } from '@/services/chromeMessageService';
+import { useBookmarkScan, useBookmarkCleanup, useTabNavigation } from '@/hooks';
+import { APP_TABS, DEFAULT_CLEANUP_OPTIONS } from '@/constants';
 import {
-  transformToSelectableResult,
-  filterCheckedItems,
   calculateCheckedCount,
   updateItemCheckState,
 } from '@/utils/dataTransformers';
@@ -15,24 +14,25 @@ import { downloadBackupFile } from '@/utils/fileDownloader';
 import './index.css';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('scan');
-  const [selectableCleanupItems, setSelectableCleanupItems] =
-    useState<SelectableCleanupResult | null>(null);
-  const [isScanning, setIsScanning] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [cleanupOptions, setCleanupOptions] = useState<CleanupOptions>({
-    removeEmptyFolders: true,
-    removeDuplicates: true,
-    removeErrorPages: true,
-  });
+  const { activeTab, setActiveTab, switchToTab } = useTabNavigation();
+  const {
+    selectableCleanupItems,
+    isScanning,
+    scan,
+    clearScanResults,
+    setSelectableCleanupItems,
+  } = useBookmarkScan();
+  const { isProcessing, cleanup, backup } = useBookmarkCleanup();
+  const [cleanupOptions, setCleanupOptions] = useState<CleanupOptions>(
+    DEFAULT_CLEANUP_OPTIONS
+  );
 
   // 탭 변경 감지 및 스캔 탭 상태 초기화
   useEffect(() => {
     if (activeTab !== 'scan') {
-      setSelectableCleanupItems(null);
-      setIsScanning(false);
+      clearScanResults();
     }
-  }, [activeTab]);
+  }, [activeTab, clearScanResults]);
 
   // 선택된 항목의 총 개수 계산
   const checkedIssuesCount = calculateCheckedCount(selectableCleanupItems);
@@ -42,63 +42,35 @@ function App() {
     id: string,
     isChecked: boolean
   ) => {
-    if (!selectableCleanupItems) return;
+    if (!selectableCleanupItems) {
+      return;
+    }
 
     setSelectableCleanupItems(prevItems => {
-      if (!prevItems) return null;
+      if (!prevItems) {
+        return null;
+      }
       return updateItemCheckState(prevItems, category, id, isChecked);
     });
   };
 
-  const tabs: TabItem[] = [
-    { id: 'scan', label: '스캔' },
-    { id: 'settings', label: '설정' },
-    { id: 'history', label: '기록' },
-  ];
-
   const handleScan = async () => {
-    setIsScanning(true);
-    try {
-      const scanResult = await chromeMessageService.requestScan(cleanupOptions);
-      const selectableResult = transformToSelectableResult(scanResult);
-      setSelectableCleanupItems(selectableResult);
-    } catch (error) {
-      console.error('Scan failed:', error);
-    } finally {
-      setIsScanning(false);
-    }
+    await scan(cleanupOptions);
   };
 
   const handleCleanup = async () => {
     if (!selectableCleanupItems) return;
 
-    setIsProcessing(true);
-    try {
-      const itemsToCleanup = filterCheckedItems(selectableCleanupItems);
-      const { stats } = await chromeMessageService.requestCleanup(
-        itemsToCleanup,
-        cleanupOptions
-      );
-
-      // localStorage에 정리 결과 저장
-      localStorage.setItem('lastCleanupStats', JSON.stringify(stats));
-      setSelectableCleanupItems(null);
-      setActiveTab('history');
-    } catch (error) {
-      console.error('Cleanup failed:', error);
-    } finally {
-      setIsProcessing(false);
-    }
+    await cleanup(selectableCleanupItems, cleanupOptions);
+    clearScanResults();
+    switchToTab('history');
   };
 
   const handleBackup = async () => {
-    if (!chrome.runtime?.id) return;
+    const backupData = await backup();
 
-    try {
-      const backupData = await chromeMessageService.requestBackup();
+    if (backupData) {
       downloadBackupFile(backupData);
-    } catch (error) {
-      console.error('Backup failed:', error);
     }
   };
 
@@ -110,7 +82,7 @@ function App() {
       </header>
 
       <TabGroup
-        tabs={tabs}
+        tabs={APP_TABS}
         activeTab={activeTab}
         onChange={setActiveTab}
         fullWidth
