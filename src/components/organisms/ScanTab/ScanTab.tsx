@@ -3,6 +3,10 @@ import { LoadingOverlay, CollapsibleSection, Section } from '../../molecules';
 import { ProgressBar } from '../../atoms';
 import type { SelectableCleanupResult } from '@/types/bookmark';
 import type { SelectableItemUnion } from '@/types/components';
+import {
+  groupErrorPagesByCategory,
+  ERROR_CATEGORY_ORDER,
+} from '@/utils/errorMessages';
 import './ScanTab.css';
 
 // 아이콘 컴포넌트 (임시)
@@ -261,39 +265,87 @@ export const ScanTab = ({
                 handleSelectAll('errorPages', checked)
               }
             >
-              <ul>
-                {selectableCleanupItems.errorPages.map(item => (
-                  <li key={item.bookmark.id}>
-                    <label
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      <Checkbox
-                        checked={item.isChecked}
-                        onChange={e =>
-                          onItemCheckChange(
-                            'errorPages',
-                            item.bookmark.id,
-                            e.target.checked
-                          )
-                        }
-                      />
-                      <a
-                        href={item.bookmark.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={e => e.stopPropagation()}
+              {(() => {
+                const groupedErrors = groupErrorPagesByCategory(
+                  selectableCleanupItems.errorPages
+                );
+                const sortedCategories = ERROR_CATEGORY_ORDER.filter(
+                  category => groupedErrors[category]
+                );
+
+                return sortedCategories.map(category => {
+                  const categoryItems = groupedErrors[category];
+                  const categoryCheckboxState = getCheckboxState(categoryItems);
+
+                  return (
+                    <div key={category} className="error-category">
+                      <CollapsibleSection
+                        title={`${category}`}
+                        count={categoryItems.length}
+                        initialOpen={false}
+                        allChecked={categoryCheckboxState.allChecked}
+                        someChecked={categoryCheckboxState.someChecked}
+                        onSelectAllChange={checked => {
+                          categoryItems.forEach(item => {
+                            onItemCheckChange(
+                              'errorPages',
+                              item.bookmark.id,
+                              checked
+                            );
+                          });
+                        }}
                       >
-                        {item.bookmark.url}
-                      </a>
-                      ({item.errorMessage || '오류'})
-                    </label>
-                  </li>
-                ))}
-              </ul>
+                        <ul className="error-category-list">
+                          {categoryItems.map(item => (
+                            <li key={item.bookmark.id}>
+                              <label
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                <Checkbox
+                                  checked={item.isChecked}
+                                  onChange={e =>
+                                    onItemCheckChange(
+                                      'errorPages',
+                                      item.bookmark.id,
+                                      e.target.checked
+                                    )
+                                  }
+                                />
+                                <div className="error-page-item">
+                                  <a
+                                    href={item.bookmark.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={e => e.stopPropagation()}
+                                    className="error-page-url"
+                                  >
+                                    {item.bookmark.title || item.bookmark.url}
+                                  </a>
+                                  <div className="error-page-details">
+                                    <span className="error-message">
+                                      {item.errorMessage ||
+                                        '🔗 링크에 접속할 수 없습니다'}
+                                    </span>
+                                    {item.errorCode && item.errorCode > 0 && (
+                                      <span className="error-code">
+                                        HTTP {item.errorCode}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </label>
+                            </li>
+                          ))}
+                        </ul>
+                      </CollapsibleSection>
+                    </div>
+                  );
+                });
+              })()}
             </CollapsibleSection>
           )}
         </div>

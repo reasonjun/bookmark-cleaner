@@ -17,7 +17,6 @@ describe('bookmarkAnalyzer', () => {
     removeEmptyFolders: true,
     removeDuplicates: true,
     removeErrorPages: true,
-    checkHttpStatus: false,
   };
 
   beforeEach(() => {
@@ -270,7 +269,7 @@ describe('bookmarkAnalyzer', () => {
 
       expect(result.emptyFolders).toHaveLength(2);
       expect(result.duplicateUrls).toHaveLength(1);
-      expect(result.errorPages).toHaveLength(0); // 이 함수에서는 errorPages를 분석하지 않음
+      // errorPages는 이제 분석 대상이 아님
     });
 
     it('should return proper structure', () => {
@@ -279,11 +278,10 @@ describe('bookmarkAnalyzer', () => {
 
       expect(result).toHaveProperty('emptyFolders');
       expect(result).toHaveProperty('duplicateUrls');
-      expect(result).toHaveProperty('errorPages');
+      // errorPages는 이제 포함되지 않음
 
       expect(Array.isArray(result.emptyFolders)).toBe(true);
       expect(Array.isArray(result.duplicateUrls)).toBe(true);
-      expect(Array.isArray(result.errorPages)).toBe(true);
     });
 
     it('should skip empty folder analysis when removeEmptyFolders is false', () => {
@@ -296,7 +294,6 @@ describe('bookmarkAnalyzer', () => {
 
       expect(result.emptyFolders).toHaveLength(0);
       expect(result.duplicateUrls).toHaveLength(1); // 중복 스캔은 여전히 실행됨
-      expect(result.errorPages).toHaveLength(0);
     });
 
     it('should skip duplicate analysis when removeDuplicates is false', () => {
@@ -309,7 +306,6 @@ describe('bookmarkAnalyzer', () => {
 
       expect(result.emptyFolders).toHaveLength(2); // 빈 폴더 스캔은 여전히 실행됨
       expect(result.duplicateUrls).toHaveLength(0);
-      expect(result.errorPages).toHaveLength(0);
     });
 
     it('should skip all analysis when all options are false', () => {
@@ -324,7 +320,6 @@ describe('bookmarkAnalyzer', () => {
 
       expect(result.emptyFolders).toHaveLength(0);
       expect(result.duplicateUrls).toHaveLength(0);
-      expect(result.errorPages).toHaveLength(0);
     });
   });
 });

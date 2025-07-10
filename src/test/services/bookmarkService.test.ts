@@ -10,7 +10,6 @@ describe('BookmarkService', () => {
     removeEmptyFolders: true,
     removeDuplicates: true,
     removeErrorPages: true,
-    checkHttpStatus: false,
   };
 
   beforeEach(() => {
@@ -66,13 +65,13 @@ describe('BookmarkService', () => {
       expect(result.errorPages).toHaveLength(0);
     });
 
-    it('should skip error page check when checkHttpStatus is false', async () => {
-      const optionsWithoutHttpStatus = {
+    it('should skip error page check when removeErrorPages is false', async () => {
+      const optionsWithoutErrorPages = {
         ...defaultOptions,
-        checkHttpStatus: false,
+        removeErrorPages: false,
       };
       const result = await bookmarkService.scanBookmarks(
-        optionsWithoutHttpStatus
+        optionsWithoutErrorPages
       );
 
       expect(result.errorPages).toHaveLength(0);
@@ -118,6 +117,68 @@ describe('BookmarkService', () => {
       expect(result.accessible).toBe(true);
     });
 
+    it('should return accessible false for 400 status codes', async () => {
+      // Mock fetch to return 404
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 404,
+      });
+
+      const result = await bookmarkService.checkUrlStatus(
+        'https://notfound.com'
+      );
+
+      expect(result.accessible).toBe(false);
+      expect(result.errorCode).toBe(404);
+    });
+
+    it('should return accessible false for 500 status codes', async () => {
+      // Mock fetch to return 500
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+      });
+
+      const result = await bookmarkService.checkUrlStatus(
+        'https://servererror.com'
+      );
+
+      expect(result.accessible).toBe(false);
+      expect(result.errorCode).toBe(500);
+    });
+
+    it('should return accessible true for 3xx status codes', async () => {
+      // Mock fetch to return 301
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 301,
+      });
+
+      const result = await bookmarkService.checkUrlStatus(
+        'https://redirect.com'
+      );
+
+      expect(result.accessible).toBe(true);
+    });
+
+    it('should fallback to no-cors mode on CORS error', async () => {
+      // Mock fetch to fail with CORS error first, then succeed with no-cors
+      global.fetch = vi
+        .fn()
+        .mockRejectedValueOnce(new Error('CORS error'))
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 0, // no-cors mode returns 0
+        });
+
+      const result = await bookmarkService.checkUrlStatus(
+        'https://corssite.com'
+      );
+
+      expect(result.accessible).toBe(true);
+      expect(global.fetch).toHaveBeenCalledTimes(2);
+    });
+
     it('should return accessible false for failed fetch', async () => {
       // Mock fetch to fail
       global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
@@ -128,28 +189,6 @@ describe('BookmarkService', () => {
 
       expect(result.accessible).toBe(false);
       expect(result.errorCode).toBe(0);
-    });
-  });
-
-  describe('checkUrlStatusWithTab', () => {
-    it('should create tab and check status', async () => {
-      // Mock setTimeout to resolve immediately
-      vi.stubGlobal('setTimeout', (fn: () => void) => {
-        fn();
-        return 1;
-      });
-
-      vi.stubGlobal('clearTimeout', vi.fn());
-
-      const result =
-        await bookmarkService.checkUrlStatusWithTab('https://google.com');
-
-      expect(mockChrome.tabs.create).toHaveBeenCalledWith(
-        { url: 'https://google.com', active: false },
-        expect.any(Function)
-      );
-
-      expect(result.accessible).toBe(false); // Mock은 timeout으로 설정됨
     });
   });
 
@@ -196,8 +235,8 @@ describe('BookmarkService', () => {
         },
       ];
 
-      // Mock checkUrlStatusWithTab to return error for specific URL
-      vi.spyOn(bookmarkService, 'checkUrlStatusWithTab').mockImplementation(
+      // Mock checkUrlStatus to return error for specific URL
+      vi.spyOn(bookmarkService, 'checkUrlStatus').mockImplementation(
         async url => {
           if (url === 'https://nonexistent.com') {
             return { accessible: false, errorCode: 404 };
@@ -216,7 +255,7 @@ describe('BookmarkService', () => {
     });
 
     it('should extract bookmarks from tree when no bookmarks provided', async () => {
-      vi.spyOn(bookmarkService, 'checkUrlStatusWithTab').mockResolvedValue({
+      vi.spyOn(bookmarkService, 'checkUrlStatus').mockResolvedValue({
         accessible: true,
       });
 
@@ -233,7 +272,7 @@ describe('BookmarkService', () => {
         url: `https://example${i + 1}.com`,
       }));
 
-      vi.spyOn(bookmarkService, 'checkUrlStatusWithTab').mockResolvedValue({
+      vi.spyOn(bookmarkService, 'checkUrlStatus').mockResolvedValue({
         accessible: true,
       });
 
@@ -242,7 +281,7 @@ describe('BookmarkService', () => {
       );
 
       // Should be called in batches of 5
-      expect(bookmarkService.checkUrlStatusWithTab).toHaveBeenCalledTimes(12);
+      expect(bookmarkService.checkUrlStatus).toHaveBeenCalledTimes(12);
     });
   });
 });

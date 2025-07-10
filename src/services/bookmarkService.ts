@@ -7,6 +7,7 @@ import {
   analyzeBookmarkTree,
   extractAllBookmarks,
 } from '@/utils/bookmarkAnalyzer';
+import { getErrorMessage } from '@/utils/errorMessages';
 
 export class BookmarkService {
   /**
@@ -24,12 +25,14 @@ export class BookmarkService {
     const result = analyzeBookmarkTree(bookmarkTree[0], options);
 
     // 에러 페이지 제거 옵션이 활성화된 경우에만 에러 페이지 검사 실행
-    if (options.removeErrorPages && options.checkHttpStatus) {
-      const allBookmarks = extractAllBookmarks(bookmarkTree[0]);
-      result.errorPages = await this.findErrorPages(allBookmarks);
-    }
+    const errorPages = options.removeErrorPages
+      ? await this.findErrorPages(extractAllBookmarks(bookmarkTree[0]))
+      : [];
 
-    return result;
+    return {
+      ...result,
+      errorPages,
+    };
   }
 
   /**
@@ -39,68 +42,30 @@ export class BookmarkService {
     url: string
   ): Promise<{ accessible: boolean; errorCode?: number }> {
     try {
-      await fetch(url, {
+      const response = await fetch(url, {
         method: 'HEAD',
-        mode: 'no-cors', // CORS 에러 방지
+        mode: 'cors', // CORS 모드로 변경하여 status code 확인 가능
       });
 
-      // no-cors 모드에서는 status를 확인할 수 없으므로
-      // 실제로는 탭을 열어서 확인하는 방식을 사용해야 함
+      // 400번대와 500번대 상태 코드는 에러 페이지로 분류
+      if (response.status >= 400 && response.status < 600) {
+        return { accessible: false, errorCode: response.status };
+      }
+
       return { accessible: true };
     } catch {
-      return { accessible: false, errorCode: 0 };
+      // 네트워크 에러나 CORS 에러가 발생하면 다시 no-cors 모드로 시도
+      try {
+        await fetch(url, {
+          method: 'HEAD',
+          mode: 'no-cors',
+        });
+        // no-cors 모드에서 성공하면 접근 가능한 것으로 판단
+        return { accessible: true };
+      } catch {
+        return { accessible: false, errorCode: 0 };
+      }
     }
-  }
-
-  /**
-   * 탭을 열어서 실제 HTTP 상태를 확인합니다.
-   */
-  async checkUrlStatusWithTab(
-    url: string
-  ): Promise<{ accessible: boolean; errorCode?: number }> {
-    return new Promise(resolve => {
-      // 탭을 백그라운드에서 열기
-      chrome.tabs.create({ url, active: false }, tab => {
-        if (!tab.id) {
-          resolve({ accessible: false, errorCode: 0 });
-          return;
-        }
-
-        const tabId = tab.id;
-
-        // 타임아웃 설정 (5초)
-        const timeout = setTimeout(() => {
-          chrome.tabs.remove(tabId);
-          resolve({ accessible: false, errorCode: 0 });
-        }, 5000);
-
-        // 탭 업데이트 이벤트 리스너
-        const updateListener = (
-          updatedTabId: number,
-          changeInfo: chrome.tabs.TabChangeInfo
-        ) => {
-          if (updatedTabId !== tabId || changeInfo.status !== 'complete')
-            return;
-
-          clearTimeout(timeout);
-          chrome.tabs.onUpdated.removeListener(updateListener);
-
-          // 탭 정보 가져오기
-          chrome.tabs.get(tabId, updatedTab => {
-            chrome.tabs.remove(tabId);
-
-            // 에러 페이지 체크
-            if (updatedTab.url?.startsWith('chrome-error://')) {
-              resolve({ accessible: false, errorCode: 404 });
-            } else {
-              resolve({ accessible: true });
-            }
-          });
-        };
-
-        chrome.tabs.onUpdated.addListener(updateListener);
-      });
-    });
   }
 
   /**
@@ -117,20 +82,23 @@ export class BookmarkService {
 
     const errorPages: ErrorPageBookmark[] = [];
 
-    // 배치로 처리 (한 번에 너무 많은 탭을 열지 않도록)
+    // 배치로 처리 (한 번에 너무 많은 HTTP 요청을 보내지 않도록)
     const batchSize = 5;
+
     for (let i = 0; i < bookmarks.length; i += batchSize) {
       const batch = bookmarks.slice(i, i + batchSize);
       const results = await Promise.all(
         batch.map(async bookmark => {
-          if (!bookmark.url) return null;
+          if (!bookmark.url) {
+            return null;
+          }
 
-          const status = await this.checkUrlStatusWithTab(bookmark.url);
+          const status = await this.checkUrlStatus(bookmark.url);
           if (!status.accessible) {
             return {
               bookmark,
               errorCode: status.errorCode,
-              errorMessage: `HTTP ${status.errorCode || 'Error'}`,
+              errorMessage: getErrorMessage(status.errorCode),
             };
           }
           return null;

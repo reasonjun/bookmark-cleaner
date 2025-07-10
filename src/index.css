@@ -126,7 +126,6 @@ body {
   padding: 1.5rem;
 }
 
-
 /* 스크롤바 스타일 */
 .main__content::-webkit-scrollbar {
   width: 6px;
@@ -159,4 +158,3 @@ button {
 input[type='checkbox'] {
   cursor: pointer;
 }
-

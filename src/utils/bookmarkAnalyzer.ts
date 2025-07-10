@@ -10,11 +10,10 @@ import type {
 export function analyzeBookmarkTree(
   node: chrome.bookmarks.BookmarkTreeNode,
   options: CleanupOptions
-): CleanupResult {
+): Omit<CleanupResult, 'errorPages'> {
   return {
     emptyFolders: options.removeEmptyFolders ? findEmptyFolders(node) : [],
     duplicateUrls: options.removeDuplicates ? findDuplicateUrls(node) : [],
-    errorPages: [],
   };
 }
 

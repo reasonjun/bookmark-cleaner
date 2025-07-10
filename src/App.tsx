@@ -24,7 +24,6 @@ function App() {
     removeEmptyFolders: true,
     removeDuplicates: true,
     removeErrorPages: true,
-    checkHttpStatus: false,
   });
 
   // 탭 변경 감지 및 스캔 탭 상태 초기화

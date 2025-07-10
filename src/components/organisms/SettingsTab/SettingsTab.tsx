@@ -1,4 +1,4 @@
-import { type ChangeEvent, useState } from 'react';
+import { type ChangeEvent } from 'react';
 import { Button, Checkbox } from '@reasonjun/design-system-app';
 import type { CleanupOptions } from '@/types/bookmark';
 import './SettingsTab.css';
@@ -16,8 +16,6 @@ export const SettingsTab = ({
   onBackup,
   isProcessing,
 }: SettingsTabProps) => {
-  const [showAdvanced, setShowAdvanced] = useState(false);
-
   const handleOptionChange =
     (key: keyof CleanupOptions) => (e: ChangeEvent<HTMLInputElement>) => {
       onOptionsChange({
@@ -64,29 +62,6 @@ export const SettingsTab = ({
           </span>
         </label>
       </div>
-
-      <button
-        className="cleanup-control-panel__advanced-toggle"
-        onClick={() => setShowAdvanced(!showAdvanced)}
-        type="button"
-      >
-        {showAdvanced ? '고급 옵션 숨기기' : '고급 옵션 보기'}
-      </button>
-
-      {showAdvanced && (
-        <div className="cleanup-control-panel__advanced">
-          <label className="cleanup-control-panel__option">
-            <Checkbox
-              checked={options.checkHttpStatus}
-              onChange={handleOptionChange('checkHttpStatus')}
-              disabled={isProcessing}
-            />
-            <span className="cleanup-control-panel__option-label">
-              HTTP 상태 확인 (느릴 수 있음)
-            </span>
-          </label>
-        </div>
-      )}
 
       <div className="cleanup-control-panel__actions">
         <Button

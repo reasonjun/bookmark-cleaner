@@ -31,7 +31,6 @@ export interface CleanupOptions {
   removeEmptyFolders: boolean;
   removeDuplicates: boolean;
   removeErrorPages: boolean;
-  checkHttpStatus: boolean;
 }
 
 // 선택 가능한 빈 폴더
