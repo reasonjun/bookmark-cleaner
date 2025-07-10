@@ -128,7 +128,7 @@ export const mockChrome = {
 
 // 글로벌 chrome 객체 설정
 export function setupChromeMock() {
-  global.chrome = mockChrome as typeof chrome;
+  global.chrome = mockChrome as unknown as typeof chrome;
 }
 
 export function resetChromeMock() {

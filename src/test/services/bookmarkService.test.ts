@@ -11,7 +11,6 @@ describe('BookmarkService', () => {
     removeDuplicates: true,
     removeErrorPages: true,
     checkHttpStatus: false,
-    emptyFolderIncludesSubfolders: false,
   };
 
   beforeEach(() => {
@@ -53,16 +52,6 @@ describe('BookmarkService', () => {
 
       expect(result.emptyFolders.length).toBeGreaterThan(0);
       expect(result.duplicateUrls.length).toBeGreaterThan(0);
-    });
-
-    it('should respect emptyFolderIncludesSubfolders option', async () => {
-      const optionsWithSubfolders = {
-        ...defaultOptions,
-        emptyFolderIncludesSubfolders: true,
-      };
-      const result = await bookmarkService.scanBookmarks(optionsWithSubfolders);
-
-      expect(result.emptyFolders.length).toBeGreaterThanOrEqual(2);
     });
 
     it('should skip error page check when removeErrorPages is false', async () => {

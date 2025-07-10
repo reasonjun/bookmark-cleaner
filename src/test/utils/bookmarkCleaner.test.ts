@@ -276,6 +276,11 @@ describe('bookmarkCleaner', () => {
   });
 
   describe('restoreBookmarks', () => {
+    beforeEach(() => {
+      // Mock the global confirm function
+      global.confirm = vi.fn().mockReturnValue(true);
+    });
+
     it('should restore bookmarks from backup', async () => {
       const mockBackup = {
         version: 1,
@@ -382,6 +387,23 @@ describe('bookmarkCleaner', () => {
         title: 'Google',
         url: 'https://google.com',
       });
+    });
+
+    it('should return early when user cancels confirmation', async () => {
+      global.confirm = vi.fn().mockReturnValue(false);
+
+      const mockBackup = {
+        version: 1,
+        timestamp: '2024-01-01T00:00:00.000Z',
+        bookmarks: [{ id: '0', title: 'Root', children: [] }],
+      };
+
+      await restoreBookmarks(JSON.stringify(mockBackup));
+
+      expect(global.confirm).toHaveBeenCalledWith(
+        '북마크를 복원하면 현재 모든 북마크가 삭제됩니다. 계속하시겠습니까?'
+      );
+      expect(mockChrome.bookmarks.getTree).not.toHaveBeenCalled();
     });
   });
 });

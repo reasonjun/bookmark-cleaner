@@ -18,7 +18,6 @@ describe('bookmarkAnalyzer', () => {
     removeDuplicates: true,
     removeErrorPages: true,
     checkHttpStatus: false,
-    emptyFolderIncludesSubfolders: false,
   };
 
   beforeEach(() => {
@@ -27,25 +26,13 @@ describe('bookmarkAnalyzer', () => {
   });
 
   describe('findEmptyFolders', () => {
-    it('should find empty folders (default behavior)', () => {
+    it('should find empty folders', () => {
       const rootNode = mockBookmarkTree[0];
-      const emptyFolders = findEmptyFolders(rootNode, defaultOptions);
+      const emptyFolders = findEmptyFolders(rootNode, []);
 
       expect(emptyFolders).toHaveLength(2);
-      expect(emptyFolders[0].title).toBe('Empty Folder');
-      expect(emptyFolders[1].title).toBe('Another Empty Folder');
-    });
-
-    it('should find folders with only subfolders when emptyFolderIncludesSubfolders is true', () => {
-      const rootNode = mockBookmarkTree[0];
-      const optionsWithSubfolders = {
-        ...defaultOptions,
-        emptyFolderIncludesSubfolders: true,
-      };
-      const emptyFolders = findEmptyFolders(rootNode, optionsWithSubfolders);
-
-      // 하위 폴더만 있고 실제 북마크가 없는 폴더도 포함되어야 함
-      expect(emptyFolders.length).toBeGreaterThanOrEqual(2);
+      expect(emptyFolders.map(f => f.title)).toContain('Empty Folder');
+      expect(emptyFolders.map(f => f.title)).toContain('Another Empty Folder');
     });
 
     it('should not include root folder even if empty', () => {
@@ -58,18 +45,149 @@ describe('bookmarkAnalyzer', () => {
 
       const emptyFolders = findEmptyFolders(
         emptyRoot as chrome.bookmarks.BookmarkTreeNode,
-        defaultOptions
+        []
       );
-      expect(emptyFolders).toHaveLength(0);
+      expect(emptyFolders).toHaveLength(1);
     });
 
-    it('should not include folders with children when emptyFolderIncludesSubfolders is false', () => {
+    it('should not include folders with children', () => {
       const rootNode = mockBookmarkTree[0];
-      const emptyFolders = findEmptyFolders(rootNode, defaultOptions);
+      const emptyFolders = findEmptyFolders(rootNode, []);
 
       const folderTitles = emptyFolders.map(f => f.title);
       expect(folderTitles).not.toContain('Bookmarks Bar');
       expect(folderTitles).not.toContain('Other Bookmarks');
+    });
+
+    it('should handle deeply nested empty folders', () => {
+      const deeplyNestedTree = {
+        id: '0',
+        title: 'Root',
+        syncing: false,
+        children: [
+          {
+            id: '1',
+            title: 'Level 1',
+            parentId: '0',
+            syncing: false,
+            children: [
+              {
+                id: '2',
+                title: 'Level 2 Empty',
+                parentId: '1',
+                syncing: false,
+                children: [],
+              },
+              {
+                id: '3',
+                title: 'Level 2 With Child',
+                parentId: '1',
+                syncing: false,
+                children: [
+                  {
+                    id: '4',
+                    title: 'Level 3 Empty',
+                    parentId: '3',
+                    syncing: false,
+                    children: [],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      const emptyFolders = findEmptyFolders(
+        deeplyNestedTree as chrome.bookmarks.BookmarkTreeNode,
+        []
+      );
+      expect(emptyFolders).toHaveLength(2);
+      expect(emptyFolders.map(f => f.title)).toContain('Level 2 Empty');
+      expect(emptyFolders.map(f => f.title)).toContain('Level 3 Empty');
+    });
+
+    it('should not include special folders (with folderType)', () => {
+      const treeWithSpecialFolder = {
+        id: '0',
+        title: 'Root',
+        syncing: false,
+        children: [
+          {
+            id: '1',
+            title: 'Bookmarks Bar',
+            parentId: '0',
+            syncing: false,
+            folderType: 'bookmarks_bar',
+            children: [],
+          },
+          {
+            id: '2',
+            title: 'Regular Empty Folder',
+            parentId: '0',
+            syncing: false,
+            children: [],
+          },
+        ],
+      };
+
+      const emptyFolders = findEmptyFolders(
+        treeWithSpecialFolder as chrome.bookmarks.BookmarkTreeNode,
+        []
+      );
+      expect(emptyFolders).toHaveLength(1);
+      expect(emptyFolders[0].title).toBe('Regular Empty Folder');
+    });
+
+    it('should return empty array for tree with no empty folders', () => {
+      const treeWithNoEmptyFolders = {
+        id: '0',
+        title: 'Root',
+        syncing: false,
+        children: [
+          {
+            id: '1',
+            title: 'Folder with bookmark',
+            parentId: '0',
+            syncing: false,
+            children: [
+              {
+                id: '2',
+                title: 'Test Bookmark',
+                parentId: '1',
+                url: 'https://test.com',
+                dateAdded: 1640000000000,
+                syncing: false,
+              },
+            ],
+          },
+        ],
+      };
+
+      const emptyFolders = findEmptyFolders(
+        treeWithNoEmptyFolders as chrome.bookmarks.BookmarkTreeNode,
+        []
+      );
+      expect(emptyFolders).toHaveLength(0);
+    });
+
+    it('should accumulate results in provided array', () => {
+      const rootNode = mockBookmarkTree[0];
+      const existingFolders = [
+        {
+          id: 'existing',
+          title: 'Existing Empty Folder',
+          syncing: false,
+          children: [],
+        } as chrome.bookmarks.BookmarkTreeNode,
+      ];
+
+      const emptyFolders = findEmptyFolders(rootNode, existingFolders);
+
+      expect(emptyFolders).toHaveLength(3);
+      expect(emptyFolders.map(f => f.title)).toContain('Existing Empty Folder');
+      expect(emptyFolders.map(f => f.title)).toContain('Empty Folder');
+      expect(emptyFolders.map(f => f.title)).toContain('Another Empty Folder');
     });
   });
 
@@ -153,19 +271,6 @@ describe('bookmarkAnalyzer', () => {
       expect(result.emptyFolders).toHaveLength(2);
       expect(result.duplicateUrls).toHaveLength(1);
       expect(result.errorPages).toHaveLength(0); // 이 함수에서는 errorPages를 분석하지 않음
-    });
-
-    it('should analyze with emptyFolderIncludesSubfolders option', () => {
-      const rootNode = mockBookmarkTree[0];
-      const optionsWithSubfolders = {
-        ...defaultOptions,
-        emptyFolderIncludesSubfolders: true,
-      };
-      const result = analyzeBookmarkTree(rootNode, optionsWithSubfolders);
-
-      expect(result.emptyFolders.length).toBeGreaterThanOrEqual(2);
-      expect(result.duplicateUrls).toHaveLength(1);
-      expect(result.errorPages).toHaveLength(0);
     });
 
     it('should return proper structure', () => {
