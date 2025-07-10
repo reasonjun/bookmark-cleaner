@@ -16,7 +16,6 @@ import {
   transformToSelectableResult,
   filterCheckedItems,
   calculateCheckedCount,
-  hasCleanupPossibleItems,
   updateItemCheckState,
 } from '@/utils/dataTransformers';
 import { downloadBackupFile } from '@/utils/fileDownloader';
@@ -33,6 +32,7 @@ export const Popup = () => {
     removeDuplicates: true,
     removeErrorPages: true,
     checkHttpStatus: false,
+    emptyFolderIncludesSubfolders: false,
   });
   const [lastCleanupStats, setLastCleanupStats] = useState<CleanupStats | null>(
     null
@@ -45,9 +45,6 @@ export const Popup = () => {
       setIsScanning(false);
     }
   }, [activeTab]);
-
-  // 정리 가능한 항목이 있는지 확인
-  const isCleanupPossible = hasCleanupPossibleItems(selectableCleanupItems);
 
   // 선택된 항목의 총 개수 계산
   const checkedIssuesCount = calculateCheckedCount(selectableCleanupItems);
@@ -74,7 +71,7 @@ export const Popup = () => {
   const handleScan = async () => {
     setIsScanning(true);
     try {
-      const scanResult = await chromeMessageService.requestScan();
+      const scanResult = await chromeMessageService.requestScan(cleanupOptions);
       const selectableResult = transformToSelectableResult(scanResult);
       setSelectableCleanupItems(selectableResult);
     } catch (error) {
@@ -90,13 +87,13 @@ export const Popup = () => {
     setIsProcessing(true);
     try {
       const itemsToCleanup = filterCheckedItems(selectableCleanupItems);
-      const { stats, updatedResult } =
-        await chromeMessageService.requestCleanup(itemsToCleanup);
+      const { stats } = await chromeMessageService.requestCleanup(
+        itemsToCleanup,
+        cleanupOptions
+      );
 
       setLastCleanupStats(stats);
-      const updatedSelectableResult =
-        transformToSelectableResult(updatedResult);
-      setSelectableCleanupItems(updatedSelectableResult);
+      setSelectableCleanupItems(null);
       setActiveTab('history');
     } catch (error) {
       console.error('Cleanup failed:', error);
@@ -114,10 +111,6 @@ export const Popup = () => {
     } catch (error) {
       console.error('Backup failed:', error);
     }
-  };
-
-  const handleStartCleanupFromScanTab = () => {
-    setActiveTab('settings');
   };
 
   return (
@@ -161,7 +154,7 @@ export const Popup = () => {
                   <Button
                     variant="primary"
                     size="medium"
-                    onClick={handleStartCleanupFromScanTab}
+                    onClick={handleCleanup}
                     disabled={checkedIssuesCount === 0}
                   >
                     정리 시작
@@ -177,15 +170,8 @@ export const Popup = () => {
             <CleanupControlPanel
               options={cleanupOptions}
               onOptionsChange={setCleanupOptions}
-              onCleanup={handleCleanup}
               onBackup={handleBackup}
               isProcessing={isProcessing}
-              isCleanupPossible={isCleanupPossible}
-              initialCleanupStep={
-                activeTab === 'settings' && checkedIssuesCount > 0
-                  ? 'review'
-                  : 'options'
-              }
             />
           </div>
         )}

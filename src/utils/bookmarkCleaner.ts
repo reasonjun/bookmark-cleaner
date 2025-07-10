@@ -140,6 +140,14 @@ export async function backupBookmarks(): Promise<string> {
  * 백업에서 북마크를 복원합니다.
  */
 export async function restoreBookmarks(backupJson: string): Promise<void> {
+  const confirmed = confirm(
+    '북마크를 복원하면 현재 모든 북마크가 삭제됩니다. 계속하시겠습니까?'
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
   try {
     const backup = JSON.parse(backupJson);
     if (!backup.bookmarks || !Array.isArray(backup.bookmarks)) {
@@ -199,7 +207,7 @@ async function restoreBookmarkTree(
   }
 
   // 새 북마크/폴더 생성
-  const createDetails: chrome.bookmarks.BookmarkCreateArg = {
+  const createDetails: chrome.bookmarks.CreateDetails = {
     parentId,
     title: node.title,
   };

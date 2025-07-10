@@ -5,6 +5,7 @@ import {
   findDuplicateUrls,
   extractAllBookmarks,
 } from '../../utils/bookmarkAnalyzer';
+import type { CleanupOptions } from '../../types/bookmark';
 import {
   mockBookmarkTree,
   setupChromeMock,
@@ -12,37 +13,59 @@ import {
 } from '../mocks/chrome';
 
 describe('bookmarkAnalyzer', () => {
+  const defaultOptions: CleanupOptions = {
+    removeEmptyFolders: true,
+    removeDuplicates: true,
+    removeErrorPages: true,
+    checkHttpStatus: false,
+    emptyFolderIncludesSubfolders: false,
+  };
+
   beforeEach(() => {
     setupChromeMock();
     resetChromeMock();
   });
 
   describe('findEmptyFolders', () => {
-    it('should find empty folders', () => {
+    it('should find empty folders (default behavior)', () => {
       const rootNode = mockBookmarkTree[0];
-      const emptyFolders = findEmptyFolders(rootNode);
+      const emptyFolders = findEmptyFolders(rootNode, defaultOptions);
 
       expect(emptyFolders).toHaveLength(2);
       expect(emptyFolders[0].title).toBe('Empty Folder');
       expect(emptyFolders[1].title).toBe('Another Empty Folder');
     });
 
+    it('should find folders with only subfolders when emptyFolderIncludesSubfolders is true', () => {
+      const rootNode = mockBookmarkTree[0];
+      const optionsWithSubfolders = {
+        ...defaultOptions,
+        emptyFolderIncludesSubfolders: true,
+      };
+      const emptyFolders = findEmptyFolders(rootNode, optionsWithSubfolders);
+
+      // 하위 폴더만 있고 실제 북마크가 없는 폴더도 포함되어야 함
+      expect(emptyFolders.length).toBeGreaterThanOrEqual(2);
+    });
+
     it('should not include root folder even if empty', () => {
       const emptyRoot = {
         id: '0',
         title: 'Root',
+        syncing: false,
         children: [],
       };
 
       const emptyFolders = findEmptyFolders(
-        emptyRoot as chrome.bookmarks.BookmarkTreeNode
+        emptyRoot as chrome.bookmarks.BookmarkTreeNode,
+        defaultOptions
       );
       expect(emptyFolders).toHaveLength(0);
     });
 
-    it('should not include folders with children', () => {
+    it('should not include folders with children when emptyFolderIncludesSubfolders is false', () => {
       const rootNode = mockBookmarkTree[0];
-      const emptyFolders = findEmptyFolders(rootNode);
+      const emptyFolders = findEmptyFolders(rootNode, defaultOptions);
 
       const folderTitles = emptyFolders.map(f => f.title);
       expect(folderTitles).not.toContain('Bookmarks Bar');
@@ -73,6 +96,7 @@ describe('bookmarkAnalyzer', () => {
       const emptyNode = {
         id: '0',
         title: 'Root',
+        syncing: false,
         children: [],
       };
 
@@ -110,6 +134,7 @@ describe('bookmarkAnalyzer', () => {
       const emptyNode = {
         id: '0',
         title: 'Root',
+        syncing: false,
         children: [],
       };
 
@@ -121,18 +146,31 @@ describe('bookmarkAnalyzer', () => {
   });
 
   describe('analyzeBookmarkTree', () => {
-    it('should analyze entire bookmark tree', () => {
+    it('should analyze entire bookmark tree with default options', () => {
       const rootNode = mockBookmarkTree[0];
-      const result = analyzeBookmarkTree(rootNode);
+      const result = analyzeBookmarkTree(rootNode, defaultOptions);
 
       expect(result.emptyFolders).toHaveLength(2);
       expect(result.duplicateUrls).toHaveLength(1);
       expect(result.errorPages).toHaveLength(0); // 이 함수에서는 errorPages를 분석하지 않음
     });
 
+    it('should analyze with emptyFolderIncludesSubfolders option', () => {
+      const rootNode = mockBookmarkTree[0];
+      const optionsWithSubfolders = {
+        ...defaultOptions,
+        emptyFolderIncludesSubfolders: true,
+      };
+      const result = analyzeBookmarkTree(rootNode, optionsWithSubfolders);
+
+      expect(result.emptyFolders.length).toBeGreaterThanOrEqual(2);
+      expect(result.duplicateUrls).toHaveLength(1);
+      expect(result.errorPages).toHaveLength(0);
+    });
+
     it('should return proper structure', () => {
       const rootNode = mockBookmarkTree[0];
-      const result = analyzeBookmarkTree(rootNode);
+      const result = analyzeBookmarkTree(rootNode, defaultOptions);
 
       expect(result).toHaveProperty('emptyFolders');
       expect(result).toHaveProperty('duplicateUrls');
@@ -141,6 +179,47 @@ describe('bookmarkAnalyzer', () => {
       expect(Array.isArray(result.emptyFolders)).toBe(true);
       expect(Array.isArray(result.duplicateUrls)).toBe(true);
       expect(Array.isArray(result.errorPages)).toBe(true);
+    });
+
+    it('should skip empty folder analysis when removeEmptyFolders is false', () => {
+      const rootNode = mockBookmarkTree[0];
+      const optionsWithoutEmptyFolders = {
+        ...defaultOptions,
+        removeEmptyFolders: false,
+      };
+      const result = analyzeBookmarkTree(rootNode, optionsWithoutEmptyFolders);
+
+      expect(result.emptyFolders).toHaveLength(0);
+      expect(result.duplicateUrls).toHaveLength(1); // 중복 스캔은 여전히 실행됨
+      expect(result.errorPages).toHaveLength(0);
+    });
+
+    it('should skip duplicate analysis when removeDuplicates is false', () => {
+      const rootNode = mockBookmarkTree[0];
+      const optionsWithoutDuplicates = {
+        ...defaultOptions,
+        removeDuplicates: false,
+      };
+      const result = analyzeBookmarkTree(rootNode, optionsWithoutDuplicates);
+
+      expect(result.emptyFolders).toHaveLength(2); // 빈 폴더 스캔은 여전히 실행됨
+      expect(result.duplicateUrls).toHaveLength(0);
+      expect(result.errorPages).toHaveLength(0);
+    });
+
+    it('should skip all analysis when all options are false', () => {
+      const rootNode = mockBookmarkTree[0];
+      const allOptionsOff = {
+        ...defaultOptions,
+        removeEmptyFolders: false,
+        removeDuplicates: false,
+        removeErrorPages: false,
+      };
+      const result = analyzeBookmarkTree(rootNode, allOptionsOff);
+
+      expect(result.emptyFolders).toHaveLength(0);
+      expect(result.duplicateUrls).toHaveLength(0);
+      expect(result.errorPages).toHaveLength(0);
     });
   });
 });

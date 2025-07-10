@@ -1,4 +1,8 @@
-import type { CleanupResult, ErrorPageBookmark } from '@/types/bookmark';
+import type {
+  CleanupResult,
+  ErrorPageBookmark,
+  CleanupOptions,
+} from '@/types/bookmark';
 import {
   analyzeBookmarkTree,
   extractAllBookmarks,
@@ -15,9 +19,17 @@ export class BookmarkService {
   /**
    * 모든 북마크를 스캔하여 정리가 필요한 항목들을 찾습니다.
    */
-  async scanBookmarks(): Promise<CleanupResult> {
+  async scanBookmarks(options: CleanupOptions): Promise<CleanupResult> {
     const bookmarkTree = await this.getBookmarkTree();
-    return analyzeBookmarkTree(bookmarkTree[0]);
+    const result = analyzeBookmarkTree(bookmarkTree[0], options);
+
+    // 에러 페이지 제거 옵션이 활성화된 경우에만 에러 페이지 검사 실행
+    if (options.removeErrorPages && options.checkHttpStatus) {
+      const allBookmarks = extractAllBookmarks(bookmarkTree[0]);
+      result.errorPages = await this.findErrorPages(allBookmarks);
+    }
+
+    return result;
   }
 
   /**
@@ -125,9 +137,11 @@ export class BookmarkService {
         })
       );
 
-      errorPages.push(
-        ...results.filter((r): r is ErrorPageBookmark => r !== null)
-      );
+      results.forEach(r => {
+        if (r !== null) {
+          errorPages.push(r);
+        }
+      });
     }
 
     return errorPages;

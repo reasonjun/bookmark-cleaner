@@ -1,9 +1,18 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { BookmarkService } from '../../services/bookmarkService';
+import type { CleanupOptions } from '../../types/bookmark';
 import { setupChromeMock, resetChromeMock, mockChrome } from '../mocks/chrome';
 
 describe('BookmarkService', () => {
   let bookmarkService: BookmarkService;
+
+  const defaultOptions: CleanupOptions = {
+    removeEmptyFolders: true,
+    removeDuplicates: true,
+    removeErrorPages: true,
+    checkHttpStatus: false,
+    emptyFolderIncludesSubfolders: false,
+  };
 
   beforeEach(() => {
     setupChromeMock();
@@ -28,7 +37,7 @@ describe('BookmarkService', () => {
 
   describe('scanBookmarks', () => {
     it('should return analyzed bookmark tree', async () => {
-      const result = await bookmarkService.scanBookmarks();
+      const result = await bookmarkService.scanBookmarks(defaultOptions);
 
       expect(result).toHaveProperty('emptyFolders');
       expect(result).toHaveProperty('duplicateUrls');
@@ -40,10 +49,70 @@ describe('BookmarkService', () => {
     });
 
     it('should find empty folders and duplicates', async () => {
-      const result = await bookmarkService.scanBookmarks();
+      const result = await bookmarkService.scanBookmarks(defaultOptions);
 
       expect(result.emptyFolders.length).toBeGreaterThan(0);
       expect(result.duplicateUrls.length).toBeGreaterThan(0);
+    });
+
+    it('should respect emptyFolderIncludesSubfolders option', async () => {
+      const optionsWithSubfolders = {
+        ...defaultOptions,
+        emptyFolderIncludesSubfolders: true,
+      };
+      const result = await bookmarkService.scanBookmarks(optionsWithSubfolders);
+
+      expect(result.emptyFolders.length).toBeGreaterThanOrEqual(2);
+    });
+
+    it('should skip error page check when removeErrorPages is false', async () => {
+      const optionsWithoutErrorPages = {
+        ...defaultOptions,
+        removeErrorPages: false,
+      };
+      const result = await bookmarkService.scanBookmarks(
+        optionsWithoutErrorPages
+      );
+
+      expect(result.errorPages).toHaveLength(0);
+    });
+
+    it('should skip error page check when checkHttpStatus is false', async () => {
+      const optionsWithoutHttpStatus = {
+        ...defaultOptions,
+        checkHttpStatus: false,
+      };
+      const result = await bookmarkService.scanBookmarks(
+        optionsWithoutHttpStatus
+      );
+
+      expect(result.errorPages).toHaveLength(0);
+    });
+
+    it('should skip empty folder scan when removeEmptyFolders is false', async () => {
+      const optionsWithoutEmptyFolders = {
+        ...defaultOptions,
+        removeEmptyFolders: false,
+      };
+      const result = await bookmarkService.scanBookmarks(
+        optionsWithoutEmptyFolders
+      );
+
+      expect(result.emptyFolders).toHaveLength(0);
+      expect(result.duplicateUrls.length).toBeGreaterThan(0); // 중복 스캔은 여전히 실행됨
+    });
+
+    it('should skip duplicate scan when removeDuplicates is false', async () => {
+      const optionsWithoutDuplicates = {
+        ...defaultOptions,
+        removeDuplicates: false,
+      };
+      const result = await bookmarkService.scanBookmarks(
+        optionsWithoutDuplicates
+      );
+
+      expect(result.duplicateUrls).toHaveLength(0);
+      expect(result.emptyFolders.length).toBeGreaterThan(0); // 빈 폴더 스캔은 여전히 실행됨
     });
   });
 

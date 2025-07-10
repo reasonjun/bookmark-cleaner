@@ -4,16 +4,22 @@ import {
   performCleanup,
   restoreBookmarks,
 } from '@/utils/bookmarkCleaner';
-import type { CleanupResult, SelectableCleanupResult } from '@/types/bookmark';
+import type {
+  CleanupResult,
+  SelectableCleanupResult,
+  CleanupOptions,
+} from '@/types/bookmark';
 
 // 메시지 타입 정의
 interface ScanMessage {
   action: 'scan';
+  options: CleanupOptions;
 }
 
 interface CleanupMessage {
   action: 'cleanup';
   items: SelectableCleanupResult;
+  options: CleanupOptions;
 }
 
 interface BackupMessage {
@@ -52,7 +58,7 @@ async function handleMessage(message: Message) {
   switch (message.action) {
     case 'scan':
       // 북마크 스캔
-      currentScanResult = await bookmarkService.scanBookmarks();
+      currentScanResult = await bookmarkService.scanBookmarks(message.options);
       return {
         success: true,
         result: currentScanResult,
@@ -62,13 +68,9 @@ async function handleMessage(message: Message) {
       // 정리 작업 수행
       const stats = await performCleanup(message.items);
 
-      // 정리 후 다시 스캔
-      const updatedScanResult = await bookmarkService.scanBookmarks();
-
       return {
         success: true,
         stats,
-        updatedResult: updatedScanResult,
       };
     }
 

@@ -26,6 +26,11 @@
   cursor: pointer;
 }
 
+.cleanup-control-panel__option--sub {
+  margin-left: 1.5rem;
+  font-size: 0.8rem;
+}
+
 .cleanup-control-panel__option-label {
   font-size: 0.875rem;
   color: var(--color-gray-700, #374151);

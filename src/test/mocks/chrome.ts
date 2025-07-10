@@ -5,11 +5,13 @@ export const mockBookmarkTree = [
   {
     id: '0',
     title: 'Root',
+    syncing: false,
     children: [
       {
         id: '1',
         title: 'Bookmarks Bar',
         parentId: '0',
+        syncing: false,
         children: [
           {
             id: '2',
@@ -17,6 +19,7 @@ export const mockBookmarkTree = [
             parentId: '1',
             url: 'https://google.com',
             dateAdded: 1640000000000,
+            syncing: false,
           },
           {
             id: '3',
@@ -24,6 +27,7 @@ export const mockBookmarkTree = [
             parentId: '1',
             url: 'https://github.com',
             dateAdded: 1640000001000,
+            syncing: false,
           },
           {
             id: '4',
@@ -31,11 +35,13 @@ export const mockBookmarkTree = [
             parentId: '1',
             url: 'https://google.com',
             dateAdded: 1640000002000,
+            syncing: false,
           },
           {
             id: '5',
             title: 'Empty Folder',
             parentId: '1',
+            syncing: false,
             children: [],
           },
         ],
@@ -44,6 +50,7 @@ export const mockBookmarkTree = [
         id: '6',
         title: 'Other Bookmarks',
         parentId: '0',
+        syncing: false,
         children: [
           {
             id: '7',
@@ -51,11 +58,13 @@ export const mockBookmarkTree = [
             parentId: '6',
             url: 'https://nonexistent-site.com',
             dateAdded: 1640000003000,
+            syncing: false,
           },
           {
             id: '8',
             title: 'Another Empty Folder',
             parentId: '6',
+            syncing: false,
             children: [],
           },
         ],
