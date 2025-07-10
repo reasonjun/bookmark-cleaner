@@ -47,19 +47,6 @@ export const CleanupControlPanel = ({
             </span>
           </label>
 
-          {options.removeEmptyFolders && (
-            <label className="cleanup-control-panel__option cleanup-control-panel__option--sub">
-              <Checkbox
-                checked={options.emptyFolderIncludesSubfolders}
-                onChange={handleOptionChange('emptyFolderIncludesSubfolders')}
-                disabled={isProcessing}
-              />
-              <span className="cleanup-control-panel__option-label">
-                하위 폴더만 있는 폴더도 빈 폴더로 간주
-              </span>
-            </label>
-          )}
-
           <label className="cleanup-control-panel__option">
             <Checkbox
               checked={options.removeDuplicates}

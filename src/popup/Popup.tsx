@@ -32,7 +32,6 @@ export const Popup = () => {
     removeDuplicates: true,
     removeErrorPages: true,
     checkHttpStatus: false,
-    emptyFolderIncludesSubfolders: false,
   });
   const [lastCleanupStats, setLastCleanupStats] = useState<CleanupStats | null>(
     null
