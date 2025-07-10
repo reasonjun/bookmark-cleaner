@@ -1,0 +1,1 @@
+export { ScanTab } from './ScanTab';

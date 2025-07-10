@@ -1,3 +1,4 @@
 // Organisms
-export * from './ScanResultPanel';
-export * from './CleanupControlPanel';
+export * from './HistoryTab';
+export * from './ScanTab';
+export * from './SettingsTab';

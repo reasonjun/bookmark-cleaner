@@ -95,6 +95,13 @@ async function handleMessage(message: Message) {
   }
 }
 
+// 확장 프로그램 아이콘 클릭시 새 탭에서 앱 열기
+chrome.action.onClicked.addListener(() => {
+  chrome.tabs.create({
+    url: chrome.runtime.getURL('index.html'),
+  });
+});
+
 // 확장 프로그램 설치/업데이트 시
 chrome.runtime.onInstalled.addListener(details => {
   if (details.reason === 'install') {

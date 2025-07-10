@@ -1,3 +1,23 @@
+/* 액션 영역 */
+.main__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.main__actions > * {
+  width: 100%;
+}
+
+/* 선택 상태 */
+.main__selection-status {
+  margin: 0 0 1rem 0;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--color-gray-600, #4b5563);
+}
+
 .scan-result-panel {
   position: relative;
   min-height: 200px;

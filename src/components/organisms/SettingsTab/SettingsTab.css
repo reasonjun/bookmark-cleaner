@@ -1,3 +1,4 @@
+/* 설정 패널 */
 .cleanup-control-panel {
   background-color: white;
   border: 1px solid var(--color-gray-200, #e5e7eb);
@@ -24,11 +25,6 @@
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
-}
-
-.cleanup-control-panel__option--sub {
-  margin-left: 1.5rem;
-  font-size: 0.8rem;
 }
 
 .cleanup-control-panel__option-label {
