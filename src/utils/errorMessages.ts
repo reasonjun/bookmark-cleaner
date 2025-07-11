@@ -66,12 +66,12 @@ export function getErrorCategory(errorCode?: number): string {
 }
 
 /**
- * 에러 페이지들을 카테고리별로 그룹화합니다.
+ * 에러 페이지들을 카테고리별로 그룹화하고 HTTP 상태 코드 순으로 정렬합니다.
  */
 export function groupErrorPagesByCategory<T extends { errorCode?: number }>(
   errorPages: T[]
 ): Record<string, T[]> {
-  return errorPages.reduce(
+  const groups = errorPages.reduce(
     (groups, item) => {
       const category = getErrorCategory(item.errorCode);
       if (!groups[category]) {
@@ -82,4 +82,15 @@ export function groupErrorPagesByCategory<T extends { errorCode?: number }>(
     },
     {} as Record<string, T[]>
   );
+
+  // Sort each category by HTTP status code
+  Object.keys(groups).forEach(category => {
+    groups[category].sort((a, b) => {
+      const aCode = a.errorCode || 0;
+      const bCode = b.errorCode || 0;
+      return aCode - bCode;
+    });
+  });
+
+  return groups;
 }
