@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import type { SelectableCleanupResult, CleanupOptions } from '@/types/bookmark';
+import type { CleanupOptions, SelectableCleanupResult } from '@/types/bookmark';
 import { chromeMessageService } from '@/services/chromeMessageService';
 import { filterCheckedItems } from '@/utils/dataTransformers';
+import { saveCleanupHistory } from '@/utils/cleanupHistory';
 
 export function useBookmarkCleanup() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -18,8 +19,8 @@ export function useBookmarkCleanup() {
         cleanupOptions
       );
 
-      // localStorage에 정리 결과 저장
-      localStorage.setItem('lastCleanupStats', JSON.stringify(stats));
+      // localStorage에 정리 결과 누적 저장
+      saveCleanupHistory(stats);
 
       return stats;
     } catch (error) {
