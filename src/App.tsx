@@ -77,7 +77,7 @@ function App() {
   return (
     <main className="main">
       <header className="main__header">
-        <h1 className="main__title">📚 BookmarkCleaner</h1>
+        <h1 className="main__title">📚 Bookmark Cleaner</h1>
         <p className="main__subtitle">북마크를 깔끔하게 정리하세요</p>
       </header>
 

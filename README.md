@@ -1,4 +1,4 @@
-# BookmarkCleaner
+# Bookmark Cleaner
 
 북마크를 자동으로 정리하고 분류하는 Chrome 확장 프로그램입니다.
 
