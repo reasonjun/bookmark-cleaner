@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { ChromeMessageService } from '../../services/chromeMessageService';
+import { ChromeMessageService } from '@/services/chromeMessageService.ts';
 import { setupChromeMock, resetChromeMock, mockChrome } from '../mocks/chrome';
 
 describe('ChromeMessageService', () => {

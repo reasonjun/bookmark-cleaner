@@ -3,13 +3,12 @@ import {
   transformToSelectableResult,
   filterCheckedItems,
   calculateCheckedCount,
-  hasCleanupPossibleItems,
   updateItemCheckState,
-} from '../../utils/dataTransformers';
+} from '@/utils/dataTransformers.ts';
 import type {
   CleanupResult,
   SelectableCleanupResult,
-} from '../../types/bookmark';
+} from '@/types/bookmark.ts';
 
 describe('dataTransformers', () => {
   const mockCleanupResult: CleanupResult = {
@@ -166,39 +165,6 @@ describe('dataTransformers', () => {
 
       const count = calculateCheckedCount(selectableResult);
       expect(count).toBe(0);
-    });
-  });
-
-  describe('hasCleanupPossibleItems', () => {
-    it('should return true when items are checked', () => {
-      const selectableResult: SelectableCleanupResult = {
-        emptyFolders: [
-          { id: '1', title: 'Empty Folder 1', parentId: '0', isChecked: true },
-        ],
-        duplicateUrls: [],
-        errorPages: [],
-      };
-
-      const result = hasCleanupPossibleItems(selectableResult);
-      expect(result).toBe(true);
-    });
-
-    it('should return false when nothing is checked', () => {
-      const selectableResult: SelectableCleanupResult = {
-        emptyFolders: [
-          { id: '1', title: 'Empty Folder 1', parentId: '0', isChecked: false },
-        ],
-        duplicateUrls: [],
-        errorPages: [],
-      };
-
-      const result = hasCleanupPossibleItems(selectableResult);
-      expect(result).toBe(false);
-    });
-
-    it('should return false for null input', () => {
-      const result = hasCleanupPossibleItems(null);
-      expect(result).toBe(false);
     });
   });
 

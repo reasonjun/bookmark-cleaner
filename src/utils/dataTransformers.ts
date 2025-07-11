@@ -1,8 +1,8 @@
 import type {
   CleanupResult,
-  SelectableCleanupResult,
   DuplicateBookmark,
   ErrorPageBookmark,
+  SelectableCleanupResult,
 } from '@/types/bookmark';
 
 /**
@@ -52,21 +52,6 @@ export function calculateCheckedCount(
     selectableResult.emptyFolders.filter(f => f.isChecked).length +
     selectableResult.duplicateUrls.filter(d => d.isChecked).length +
     selectableResult.errorPages.filter(e => e.isChecked).length
-  );
-}
-
-/**
- * 정리 가능한 항목이 있는지 확인합니다.
- */
-export function hasCleanupPossibleItems(
-  selectableResult: SelectableCleanupResult | null
-): boolean {
-  if (!selectableResult) return false;
-
-  return (
-    selectableResult.emptyFolders.some(f => f.isChecked) ||
-    selectableResult.duplicateUrls.some(d => d.isChecked) ||
-    selectableResult.errorPages.some(e => e.isChecked)
   );
 }
 

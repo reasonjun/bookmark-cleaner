@@ -1,14 +1,7 @@
-import { type ReactNode, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Tab } from '../../atoms';
+import type { TabItem } from '@/types/components';
 import './TabGroup.css';
-
-export interface TabItem {
-  id: string;
-  label: string;
-  icon?: ReactNode;
-  badge?: ReactNode;
-  disabled?: boolean;
-}
 
 export interface TabGroupProps {
   /** 탭 목록 */
@@ -66,8 +59,6 @@ export const TabGroup = ({
           active={currentActiveTab === tab.id}
           disabled={tab.disabled}
           onClick={() => handleTabClick(tab.id)}
-          icon={tab.icon}
-          badge={tab.badge}
           ariaControls={`tabpanel-${tab.id}`}
         >
           {tab.label}

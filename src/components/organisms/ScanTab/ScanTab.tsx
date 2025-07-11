@@ -1,5 +1,5 @@
 import { Button, Checkbox } from '@reasonjun/design-system-app';
-import { LoadingOverlay, CollapsibleSection, Section } from '../../molecules';
+import { LoadingOverlay, CollapsibleSection, Section } from '@/components';
 import { ProgressBar } from '../../atoms';
 import type { SelectableCleanupResult } from '@/types/bookmark';
 import type { SelectableItemUnion } from '@/types/components';

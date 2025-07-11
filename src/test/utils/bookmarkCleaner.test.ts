@@ -6,9 +6,9 @@ import {
   performCleanup,
   backupBookmarks,
   restoreBookmarks,
-} from '../../utils/bookmarkCleaner';
+} from '@/utils/bookmarkCleaner.ts';
 import { setupChromeMock, resetChromeMock, mockChrome } from '../mocks/chrome';
-import type { SelectableCleanupResult } from '../../types/bookmark';
+import type { SelectableCleanupResult } from '@/types/bookmark.ts';
 
 // Chrome API 설정
 beforeEach(() => {

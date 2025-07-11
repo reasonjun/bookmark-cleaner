@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { BookmarkService } from '../../services/bookmarkService';
-import type { CleanupOptions } from '../../types/bookmark';
+import { BookmarkService } from '@/services/bookmarkService';
+import type { CleanupOptions } from '@/types/bookmark';
 import { setupChromeMock, resetChromeMock, mockChrome } from '../mocks/chrome';
 
 describe('BookmarkService', () => {

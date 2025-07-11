@@ -4,8 +4,8 @@ import {
   findEmptyFolders,
   findDuplicateUrls,
   extractAllBookmarks,
-} from '../../utils/bookmarkAnalyzer';
-import type { CleanupOptions } from '../../types/bookmark';
+} from '@/utils/bookmarkAnalyzer.ts';
+import type { CleanupOptions } from '@/types/bookmark.ts';
 import {
   mockBookmarkTree,
   setupChromeMock,

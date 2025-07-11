@@ -4,7 +4,7 @@ import { ScanTab } from '@/components/organisms/ScanTab';
 import { SettingsTab } from '@/components/organisms/SettingsTab';
 import { HistoryTab } from '@/components/organisms/HistoryTab';
 import type { CleanupOptions, SelectableCleanupResult } from '@/types/bookmark';
-import { useBookmarkScan, useBookmarkCleanup, useTabNavigation } from '@/hooks';
+import { useBookmarkCleanup, useBookmarkScan, useTabNavigation } from '@/hooks';
 import { APP_TABS, DEFAULT_CLEANUP_OPTIONS } from '@/constants';
 import {
   calculateCheckedCount,

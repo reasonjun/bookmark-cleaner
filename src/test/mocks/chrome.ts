@@ -115,9 +115,6 @@ export const mockChrome = {
     onMessage: {
       addListener: vi.fn(),
     },
-    onInstalled: {
-      addListener: vi.fn(),
-    },
   },
   action: {
     onClicked: {

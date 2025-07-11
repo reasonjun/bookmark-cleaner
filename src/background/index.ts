@@ -4,41 +4,15 @@ import {
   performCleanup,
   restoreBookmarks,
 } from '@/utils/bookmarkCleaner';
-import type {
-  CleanupResult,
-  SelectableCleanupResult,
-  CleanupOptions,
-} from '@/types/bookmark';
-
-// 메시지 타입 정의
-interface ScanMessage {
-  action: 'scan';
-  options: CleanupOptions;
-}
-
-interface CleanupMessage {
-  action: 'cleanup';
-  items: SelectableCleanupResult;
-  options: CleanupOptions;
-}
-
-interface BackupMessage {
-  action: 'backup';
-}
-
-interface RestoreMessage {
-  action: 'restore';
-  backupData: string;
-}
-
-type Message = ScanMessage | CleanupMessage | BackupMessage | RestoreMessage;
+import type { CleanupResult } from '@/types/bookmark';
+import type { ChromeMessageType } from '@/types/chrome.ts';
 
 // 현재 스캔 결과를 메모리에 저장
 let currentScanResult: CleanupResult | null = null;
 
 // 메시지 리스너
 chrome.runtime.onMessage.addListener(
-  (message: Message, _sender, sendResponse) => {
+  (message: ChromeMessageType, _sender, sendResponse) => {
     // 비동기 응답을 위해 true 반환
     handleMessage(message)
       .then(sendResponse)
@@ -54,7 +28,7 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
-async function handleMessage(message: Message) {
+async function handleMessage(message: ChromeMessageType) {
   switch (message.action) {
     case 'scan':
       // 북마크 스캔
@@ -100,15 +74,6 @@ chrome.action.onClicked.addListener(() => {
   chrome.tabs.create({
     url: chrome.runtime.getURL('index.html'),
   });
-});
-
-// 확장 프로그램 설치/업데이트 시
-chrome.runtime.onInstalled.addListener(details => {
-  if (details.reason === 'install') {
-    console.log('BookmarkCleaner가 설치되었습니다.');
-  } else if (details.reason === 'update') {
-    console.log('BookmarkCleaner가 업데이트되었습니다.');
-  }
 });
 
 export {};

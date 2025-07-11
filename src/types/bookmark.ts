@@ -26,6 +26,12 @@ export interface CleanupStats {
   totalProcessed: number;
 }
 
+// 정리 작업 이력
+export interface CleanupHistory {
+  timestamp: number;
+  stats: CleanupStats;
+}
+
 // 정리 옵션
 export interface CleanupOptions {
   removeEmptyFolders: boolean;

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { downloadBackupFile, downloadFile } from '../../utils/fileDownloader';
+import { downloadBackupFile, downloadFile } from '@/utils/fileDownloader.ts';
 
 // DOM API mocks
 const mockCreateObjectURL = vi.fn();
