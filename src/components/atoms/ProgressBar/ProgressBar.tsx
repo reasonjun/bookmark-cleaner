@@ -26,7 +26,7 @@ export const ProgressBar = ({
   striped = false,
   ariaLabel,
 }: ProgressBarProps) => {
-  const percentage = Math.min(Math.max(0, (value / max) * 100), 100);
+  const normalizedValue = Math.min(Math.max(0, value), max);
 
   const classNames = [
     'progress-bar',
@@ -38,16 +38,14 @@ export const ProgressBar = ({
     .join(' ');
 
   return (
-    <div
-      className="progress-bar-container"
+    <progress
+      className={classNames}
+      value={normalizedValue}
+      max={max}
       style={{ height: `${height}px` }}
-      role="progressbar"
-      aria-valuenow={value}
-      aria-valuemin={0}
-      aria-valuemax={max}
-      aria-label={ariaLabel || `Progress: ${percentage}%`}
-    >
-      <div className={classNames} style={{ width: `${percentage}%` }} />
-    </div>
+      aria-label={
+        ariaLabel || `Progress: ${Math.round((normalizedValue / max) * 100)}%`
+      }
+    />
   );
 };

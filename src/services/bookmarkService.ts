@@ -20,15 +20,35 @@ export class BookmarkService {
   /**
    * 모든 북마크를 스캔하여 정리가 필요한 항목들을 찾습니다.
    */
-  async scanBookmarks(options: CleanupOptions): Promise<CleanupResult> {
+  async scanBookmarks(
+    options: CleanupOptions,
+    onProgress?: (progress: number) => void
+  ): Promise<CleanupResult> {
     const bookmarkTree = await this.getBookmarkTree();
-    const result = analyzeBookmarkTree(bookmarkTree[0], options);
 
-    // 에러 페이지 제거 옵션이 활성화된 경우에만 에러 페이지 검사 실행
+    // 1단계: 빈 폴더 검사 (10%)
+    onProgress?.(0);
+    const result = analyzeBookmarkTree(bookmarkTree[0], options);
+    onProgress?.(10);
+
+    // 2단계: 중복 URL 검사 (10%)
+    // analyzeBookmarkTree에서 이미 처리됨
+    onProgress?.(20);
+
+    // 3단계: 에러 페이지 검사 (80%)
     const errorPages = options.removeErrorPages
-      ? await this.findErrorPages(extractAllBookmarks(bookmarkTree[0]))
+      ? await this.findErrorPages(
+          extractAllBookmarks(bookmarkTree[0]),
+          errorProgress => {
+            // 에러 페이지 검사는 전체의 80%를 차지하므로
+            // 20% + (에러 페이지 진행률 * 0.8)
+            const totalProgress = 20 + errorProgress * 0.8;
+            onProgress?.(Math.round(totalProgress));
+          }
+        )
       : [];
 
+    onProgress?.(100);
     return {
       ...result,
       errorPages,
@@ -72,7 +92,8 @@ export class BookmarkService {
    * 에러 페이지들을 찾습니다.
    */
   async findErrorPages(
-    bookmarks?: chrome.bookmarks.BookmarkTreeNode[]
+    bookmarks?: chrome.bookmarks.BookmarkTreeNode[],
+    onProgress?: (progress: number) => void
   ): Promise<ErrorPageBookmark[]> {
     // 북마크가 제공되지 않으면 전체 북마크에서 추출
     if (!bookmarks) {
@@ -84,6 +105,7 @@ export class BookmarkService {
 
     // 배치로 처리 (한 번에 너무 많은 HTTP 요청을 보내지 않도록)
     const batchSize = 5;
+    const totalBookmarks = bookmarks.length;
 
     for (let i = 0; i < bookmarks.length; i += batchSize) {
       const batch = bookmarks.slice(i, i + batchSize);
@@ -110,6 +132,12 @@ export class BookmarkService {
           errorPages.push(r);
         }
       });
+
+      // 진행률 보고
+      if (onProgress) {
+        const progress = Math.round(((i + batchSize) / totalBookmarks) * 100);
+        onProgress(Math.min(progress, 100));
+      }
     }
 
     return errorPages;

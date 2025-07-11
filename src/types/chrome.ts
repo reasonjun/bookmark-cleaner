@@ -24,8 +24,14 @@ export interface RestoreMessage {
   backupData: string;
 }
 
+export interface ScanProgressMessage {
+  action: 'scan_progress';
+  progress: number;
+}
+
 export type ChromeMessageType =
   | ScanMessage
   | CleanupMessage
   | BackupMessage
-  | RestoreMessage;
+  | RestoreMessage
+  | ScanProgressMessage;

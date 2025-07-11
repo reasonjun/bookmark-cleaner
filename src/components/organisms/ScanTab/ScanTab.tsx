@@ -231,7 +231,7 @@ export const ScanTab = ({
                         rel="noopener noreferrer"
                         onClick={e => e.stopPropagation()}
                       >
-                        {item.url}
+                        {item.bookmarks[0]?.title || item.url}
                       </a>
                       ({item.bookmarks.length}개)
                     </label>

@@ -39,25 +39,12 @@ export interface CleanupOptions {
   removeErrorPages: boolean;
 }
 
-// 선택 가능한 빈 폴더
-export interface SelectableEmptyFolder
-  extends chrome.bookmarks.BookmarkTreeNode {
-  isChecked: boolean;
-}
-
-// 선택 가능한 중복 북마크
-export interface SelectableDuplicateUrl extends DuplicateBookmark {
-  isChecked: boolean;
-}
-
-// 선택 가능한 에러 페이지 북마크
-export interface SelectableErrorPage extends ErrorPageBookmark {
-  isChecked: boolean;
-}
+// 선택 가능한 아이템 제네릭 타입
+export type Selectable<T> = T & { isChecked: boolean };
 
 // 선택 가능한 정리 항목들의 결과 타입
 export interface SelectableCleanupResult {
-  emptyFolders: SelectableEmptyFolder[];
-  duplicateUrls: SelectableDuplicateUrl[];
-  errorPages: SelectableErrorPage[];
+  emptyFolders: Selectable<chrome.bookmarks.BookmarkTreeNode>[];
+  duplicateUrls: Selectable<DuplicateBookmark>[];
+  errorPages: Selectable<ErrorPageBookmark>[];
 }

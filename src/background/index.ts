@@ -32,7 +32,20 @@ async function handleMessage(message: ChromeMessageType) {
   switch (message.action) {
     case 'scan':
       // 북마크 스캔
-      currentScanResult = await bookmarkService.scanBookmarks(message.options);
+      currentScanResult = await bookmarkService.scanBookmarks(
+        message.options,
+        (progress: number) => {
+          // 진행률을 UI에 전송
+          chrome.runtime
+            .sendMessage({
+              action: 'scan_progress',
+              progress,
+            } as const)
+            .catch(() => {
+              // 메시지 전송 실패는 무시 (UI가 닫힌 경우)
+            });
+        }
+      );
       return {
         success: true,
         result: currentScanResult,

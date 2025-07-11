@@ -18,6 +18,7 @@ function App() {
   const {
     selectableCleanupItems,
     isScanning,
+    scanProgress,
     scan,
     clearScanResults,
     setSelectableCleanupItems,
@@ -94,6 +95,7 @@ function App() {
             <ScanTab
               selectableCleanupItems={selectableCleanupItems}
               isScanning={isScanning}
+              scanProgress={scanProgress}
               checkedIssuesCount={checkedIssuesCount}
               onScan={handleScan}
               onCleanup={handleCleanup}

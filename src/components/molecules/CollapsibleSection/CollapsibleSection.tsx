@@ -1,4 +1,4 @@
-import React, { type ChangeEvent, type ReactNode } from 'react';
+import { type ChangeEvent, type ReactNode } from 'react';
 import { Checkbox } from '@reasonjun/design-system-app';
 import './CollapsibleSection.css';
 
