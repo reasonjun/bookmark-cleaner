@@ -81,7 +81,7 @@ export const mockChrome = {
     removeTree: vi.fn().mockResolvedValue(undefined),
     create: vi.fn().mockImplementation(details =>
       Promise.resolve({
-        id: Math.random().toString(),
+        id: crypto.randomUUID(),
         title: details.title,
         url: details.url,
         parentId: details.parentId,
@@ -90,7 +90,12 @@ export const mockChrome = {
   },
   tabs: {
     create: vi.fn().mockImplementation((options, callback) => {
-      const tab = { id: Math.floor(Math.random() * 1000), url: options.url };
+      const tab = {
+        id: Math.floor(
+          (crypto.getRandomValues(new Uint32Array(1))[0] / 2 ** 32) * 1000
+        ),
+        url: options.url,
+      };
       callback?.(tab);
       return Promise.resolve(tab);
     }),

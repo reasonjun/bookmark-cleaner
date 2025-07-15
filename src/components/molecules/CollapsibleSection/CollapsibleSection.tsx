@@ -1,6 +1,7 @@
-import { type ChangeEvent, type ReactNode } from 'react';
-import { Checkbox } from '@reasonjun/design-system-app';
 import './CollapsibleSection.css';
+
+import { Checkbox } from '@reasonjun/design-system-app';
+import { type ChangeEvent, type ReactNode } from 'react';
 
 interface CollapsibleSectionProps {
   title: string;

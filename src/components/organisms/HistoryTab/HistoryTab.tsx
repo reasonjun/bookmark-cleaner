@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
-import type { CleanupHistory } from '@/types/bookmark';
 import './HistoryTab.css';
+
+import { useEffect, useState } from 'react';
+
+import type { CleanupHistory } from '@/types/bookmark';
 
 export const HistoryTab = () => {
   const [cleanupHistory, setCleanupHistory] = useState<CleanupHistory[]>([]);

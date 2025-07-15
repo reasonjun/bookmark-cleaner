@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import { DEFAULT_ACTIVE_TAB } from '@/constants';
 
 export function useTabNavigation() {

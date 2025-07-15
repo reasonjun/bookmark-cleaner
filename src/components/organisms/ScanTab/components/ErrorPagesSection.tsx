@@ -1,9 +1,10 @@
 import { CollapsibleSection } from '@/components';
-import { CategorySection } from './CategorySection';
+import { ERROR_CATEGORY_ORDER } from '@/constants';
 import type { SelectableCleanupResult } from '@/types/bookmark';
 import { groupErrorPagesByCategory } from '@/utils/errorMessages';
-import { ERROR_CATEGORY_ORDER } from '@/constants';
 import { getCheckboxState } from '@/utils/itemHelpers';
+
+import { CategorySection } from './CategorySection';
 
 interface ErrorPagesSectionProps {
   errorPages: SelectableCleanupResult['errorPages'];
@@ -41,7 +42,7 @@ export const ErrorPagesSection = ({
 
   const groupedErrors = groupErrorPagesByCategory(errorPages);
   const sortedCategories = ERROR_CATEGORY_ORDER.filter(
-    category => groupedErrors[category]
+    category => groupedErrors[category as keyof typeof groupedErrors]
   );
 
   return (
@@ -54,7 +55,8 @@ export const ErrorPagesSection = ({
       onSelectAllChange={onSelectAllChange}
     >
       {sortedCategories.map(category => {
-        const categoryItems = groupedErrors[category];
+        const categoryItems =
+          groupedErrors[category as keyof typeof groupedErrors];
         const categoryCheckboxState = getCheckboxState(categoryItems);
 
         return (

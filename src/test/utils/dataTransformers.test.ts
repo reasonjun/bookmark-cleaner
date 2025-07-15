@@ -1,14 +1,15 @@
-import { describe, it, expect } from 'vitest';
-import {
-  transformToSelectableResult,
-  filterCheckedItems,
-  calculateCheckedCount,
-  updateItemCheckState,
-} from '@/utils/dataTransformers.ts';
+import { describe, expect, it } from 'vitest';
+
 import type {
   CleanupResult,
   SelectableCleanupResult,
 } from '@/types/bookmark.ts';
+import {
+  calculateCheckedCount,
+  filterCheckedItems,
+  transformToSelectableResult,
+  updateItemCheckState,
+} from '@/utils/dataTransformers.ts';
 
 describe('dataTransformers', () => {
   const mockCleanupResult: CleanupResult = {

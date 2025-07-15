@@ -1,7 +1,9 @@
-import { type ChangeEvent } from 'react';
-import { Button, Checkbox } from '@reasonjun/design-system-app';
-import type { CleanupOptions } from '@/types/bookmark';
 import './SettingsTab.css';
+
+import { Button, Checkbox } from '@reasonjun/design-system-app';
+import { type ChangeEvent } from 'react';
+
+import type { CleanupOptions } from '@/types/bookmark';
 
 interface SettingsTabProps {
   options: CleanupOptions;
@@ -29,8 +31,12 @@ export const SettingsTab = ({
       <h3 className="cleanup-control-panel__title">정리 옵션</h3>
 
       <div className="cleanup-control-panel__options">
-        <label className="cleanup-control-panel__option">
+        <label
+          className="cleanup-control-panel__option"
+          htmlFor="removeEmptyFolders"
+        >
           <Checkbox
+            id="removeEmptyFolders"
             checked={options.removeEmptyFolders}
             onChange={handleOptionChange('removeEmptyFolders')}
             disabled={isProcessing}
@@ -40,8 +46,12 @@ export const SettingsTab = ({
           </span>
         </label>
 
-        <label className="cleanup-control-panel__option">
+        <label
+          className="cleanup-control-panel__option"
+          htmlFor="removeDuplicates"
+        >
           <Checkbox
+            id="removeDuplicates"
             checked={options.removeDuplicates}
             onChange={handleOptionChange('removeDuplicates')}
             disabled={isProcessing}
@@ -51,8 +61,12 @@ export const SettingsTab = ({
           </span>
         </label>
 
-        <label className="cleanup-control-panel__option">
+        <label
+          className="cleanup-control-panel__option"
+          htmlFor="removeErrorPages"
+        >
           <Checkbox
+            id="removeErrorPages"
             checked={options.removeErrorPages}
             onChange={handleOptionChange('removeErrorPages')}
             disabled={isProcessing}

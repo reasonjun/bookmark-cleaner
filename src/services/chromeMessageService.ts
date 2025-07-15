@@ -1,8 +1,8 @@
 import type {
+  CleanupOptions,
   CleanupResult,
   CleanupStats,
   SelectableCleanupResult,
-  CleanupOptions,
 } from '@/types/bookmark';
 
 export class ChromeMessageService {

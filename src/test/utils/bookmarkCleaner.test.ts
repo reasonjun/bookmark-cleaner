@@ -1,14 +1,16 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import type { SelectableCleanupResult } from '@/types/bookmark.ts';
 import {
-  removeEmptyFolders,
-  removeDuplicateBookmarks,
-  removeErrorPageBookmarks,
-  performCleanup,
   backupBookmarks,
+  performCleanup,
+  removeDuplicateBookmarks,
+  removeEmptyFolders,
+  removeErrorPageBookmarks,
   restoreBookmarks,
 } from '@/utils/bookmarkCleaner.ts';
-import { setupChromeMock, resetChromeMock, mockChrome } from '../mocks/chrome';
-import type { SelectableCleanupResult } from '@/types/bookmark.ts';
+
+import { mockChrome, resetChromeMock, setupChromeMock } from '../mocks/chrome';
 
 // Chrome API 설정
 beforeEach(() => {

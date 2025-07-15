@@ -23,7 +23,8 @@ export const Spinner = ({
     large: 32,
   };
 
-  const actualSize = typeof size === 'number' ? size : sizeMap[size];
+  const actualSize =
+    typeof size === 'number' ? size : sizeMap[size as keyof typeof sizeMap];
 
   return (
     <div

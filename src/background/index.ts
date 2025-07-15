@@ -1,11 +1,11 @@
 import { bookmarkService } from '@/services/bookmarkService';
+import type { CleanupResult } from '@/types/bookmark';
+import type { ChromeMessageType } from '@/types/chrome.ts';
 import {
   backupBookmarks,
   performCleanup,
   restoreBookmarks,
 } from '@/utils/bookmarkCleaner';
-import type { CleanupResult } from '@/types/bookmark';
-import type { ChromeMessageType } from '@/types/chrome.ts';
 
 // 현재 스캔 결과를 메모리에 저장
 let currentScanResult: CleanupResult | null = null;

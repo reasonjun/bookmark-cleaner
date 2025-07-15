@@ -1,4 +1,5 @@
 import { Checkbox } from '@reasonjun/design-system-app';
+
 import { CollapsibleSection, Section } from '@/components';
 import type { SelectableCleanupResult } from '@/types/bookmark';
 import type { SelectableItemUnion } from '@/types/components';
@@ -37,7 +38,6 @@ export const CategorySection = ({
         allChecked={allChecked}
         someChecked={someChecked}
         onSelectAllChange={onSelectAllChange}
-        children={undefined}
       />
     );
   }

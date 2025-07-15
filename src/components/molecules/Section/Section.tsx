@@ -1,5 +1,6 @@
-import { Checkbox } from '@reasonjun/design-system-app';
 import './Section.css';
+
+import { Checkbox } from '@reasonjun/design-system-app';
 import type { ChangeEvent, ReactNode } from 'react';
 
 interface SectionProps {

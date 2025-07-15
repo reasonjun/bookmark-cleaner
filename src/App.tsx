@@ -1,17 +1,19 @@
+import './index.css';
+
 import { useEffect, useState } from 'react';
+
 import { TabGroup } from '@/components';
+import { HistoryTab } from '@/components/organisms/HistoryTab';
 import { ScanTab } from '@/components/organisms/ScanTab';
 import { SettingsTab } from '@/components/organisms/SettingsTab';
-import { HistoryTab } from '@/components/organisms/HistoryTab';
-import type { CleanupOptions, SelectableCleanupResult } from '@/types/bookmark';
-import { useBookmarkCleanup, useBookmarkScan, useTabNavigation } from '@/hooks';
 import { APP_TABS, DEFAULT_CLEANUP_OPTIONS } from '@/constants';
+import { useBookmarkCleanup, useBookmarkScan, useTabNavigation } from '@/hooks';
+import type { CleanupOptions, SelectableCleanupResult } from '@/types/bookmark';
 import {
   calculateCheckedCount,
   updateItemCheckState,
 } from '@/utils/dataTransformers';
 import { downloadBackupFile } from '@/utils/fileDownloader';
-import './index.css';
 
 function App() {
   const { activeTab, setActiveTab, switchToTab } = useTabNavigation();

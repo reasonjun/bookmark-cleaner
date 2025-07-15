@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import type { CleanupOptions, SelectableCleanupResult } from '@/types/bookmark';
+
 import { chromeMessageService } from '@/services/chromeMessageService';
-import { filterCheckedItems } from '@/utils/dataTransformers';
+import type { CleanupOptions, SelectableCleanupResult } from '@/types/bookmark';
 import { saveCleanupHistory } from '@/utils/cleanupHistory';
+import { filterCheckedItems } from '@/utils/dataTransformers';
 
 export function useBookmarkCleanup() {
   const [isProcessing, setIsProcessing] = useState(false);

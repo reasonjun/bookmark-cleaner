@@ -1,15 +1,17 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  analyzeBookmarkTree,
-  findEmptyFolders,
-  findDuplicateUrls,
-  extractAllBookmarks,
-} from '@/utils/bookmarkAnalyzer.ts';
+import { beforeEach, describe, expect, it } from 'vitest';
+
 import type { CleanupOptions } from '@/types/bookmark.ts';
 import {
+  analyzeBookmarkTree,
+  extractAllBookmarks,
+  findDuplicateUrls,
+  findEmptyFolders,
+} from '@/utils/bookmarkAnalyzer.ts';
+
+import {
   mockBookmarkTree,
-  setupChromeMock,
   resetChromeMock,
+  setupChromeMock,
 } from '../mocks/chrome';
 
 describe('bookmarkAnalyzer', () => {

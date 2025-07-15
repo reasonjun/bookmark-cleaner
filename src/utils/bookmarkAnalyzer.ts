@@ -1,7 +1,7 @@
 import type {
+  CleanupOptions,
   CleanupResult,
   DuplicateBookmark,
-  CleanupOptions,
 } from '@/types/bookmark';
 
 /**

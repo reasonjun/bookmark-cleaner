@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
-import type { SelectableCleanupResult, CleanupOptions } from '@/types/bookmark';
+import { useEffect, useState } from 'react';
+
 import { chromeMessageService } from '@/services/chromeMessageService';
-import { transformToSelectableResult } from '@/utils/dataTransformers';
+import type { CleanupOptions, SelectableCleanupResult } from '@/types/bookmark';
 import type { ScanProgressMessage } from '@/types/chrome';
+import { transformToSelectableResult } from '@/utils/dataTransformers';
 
 export function useBookmarkScan() {
   const [selectableCleanupItems, setSelectableCleanupItems] =

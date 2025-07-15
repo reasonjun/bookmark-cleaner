@@ -1,7 +1,7 @@
 import type {
+  CleanupOptions,
   CleanupResult,
   ErrorPageBookmark,
-  CleanupOptions,
 } from '@/types/bookmark';
 import {
   analyzeBookmarkTree,

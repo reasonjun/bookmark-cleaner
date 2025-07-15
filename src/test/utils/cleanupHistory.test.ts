@@ -1,6 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { getCleanupHistory, saveCleanupHistory } from '@/utils/cleanupHistory';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import type { CleanupHistory, CleanupStats } from '@/types/bookmark';
+import { getCleanupHistory, saveCleanupHistory } from '@/utils/cleanupHistory';
 
 // Mock localStorage
 const localStorageMock = {

@@ -1,7 +1,11 @@
+import './ScanTab.css';
+
 import { Button } from '@reasonjun/design-system-app';
+
 import type { SelectableCleanupResult } from '@/types/bookmark';
 import type { SelectableItemUnion } from '@/types/components';
-import { getItemId, getCheckboxState } from '@/utils/itemHelpers';
+import { getCheckboxState, getItemId } from '@/utils/itemHelpers';
+
 import {
   CategorySection,
   ErrorPagesSection,
@@ -9,7 +13,6 @@ import {
   ScanResultError,
   ScanResultLoading,
 } from './components';
-import './ScanTab.css';
 
 interface ScanTabProps {
   selectableCleanupItems: SelectableCleanupResult | null;
@@ -41,7 +44,11 @@ export const ScanTab = ({
     checked: boolean
   ) => {
     if (!selectableCleanupItems) return;
-    selectableCleanupItems[category].forEach((item: SelectableItemUnion) => {
+    (
+      selectableCleanupItems[
+        category as keyof typeof selectableCleanupItems
+      ] as SelectableItemUnion[]
+    ).forEach((item: SelectableItemUnion) => {
       const id = getItemId(item, category);
       onItemCheckChange(category, id, checked);
     });
@@ -149,15 +156,19 @@ export const ScanTab = ({
     <>
       {ScanResultPanel()}
       <div className="main__actions">
-        {isScanning ? (
-          <Button variant="primary" size="medium" disabled>
-            스캔 중...
-          </Button>
-        ) : selectableCleanupItems === null ? (
+        {!isScanning && !selectableCleanupItems && (
           <Button variant="primary" size="medium" onClick={onScan}>
             스캔
           </Button>
-        ) : (
+        )}
+
+        {isScanning && (
+          <Button variant="primary" size="medium" disabled>
+            스캔 중...
+          </Button>
+        )}
+
+        {!isScanning && selectableCleanupItems && (
           <>
             <p className="main__selection-status">
               {checkedIssuesCount > 0

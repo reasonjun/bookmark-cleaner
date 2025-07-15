@@ -1,7 +1,10 @@
-import { useEffect, useState } from 'react';
-import { Tab } from '../../atoms';
-import type { TabItem } from '@/types/components';
 import './TabGroup.css';
+
+import { useEffect, useState } from 'react';
+
+import type { TabItem } from '@/types/components';
+
+import { Tab } from '../../atoms';
 
 export interface TabGroupProps {
   /** 탭 목록 */

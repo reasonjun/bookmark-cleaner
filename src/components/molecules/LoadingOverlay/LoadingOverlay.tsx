@@ -1,5 +1,6 @@
-import { Spinner } from '../../atoms';
 import './LoadingOverlay.css';
+
+import { Spinner } from '../../atoms';
 
 export interface LoadingOverlayProps {
   /** 로딩 메시지 */
