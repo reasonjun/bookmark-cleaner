@@ -71,26 +71,28 @@ export function getErrorCategory(errorCode?: number): string {
 export function groupErrorPagesByCategory<T extends { errorCode?: number }>(
   errorPages: T[]
 ): Record<string, T[]> {
-  const groups = errorPages.reduce(
-    (groups, item) => {
-      const category = getErrorCategory(item.errorCode);
-      if (!groups[category]) {
-        groups[category] = [];
-      }
-      groups[category].push(item);
-      return groups;
-    },
-    {} as Record<string, T[]>
-  );
+  const groups = new Map<string, T[]>();
 
-  // Sort each category by HTTP status code
-  Object.keys(groups).forEach(category => {
-    groups[category].sort((a, b) => {
+  for (const item of errorPages) {
+    const category = getErrorCategory(item.errorCode);
+    const existingGroup = groups.get(category);
+    if (existingGroup) {
+      existingGroup.push(item);
+    } else {
+      groups.set(category, [item]);
+    }
+  }
+
+  // Sort each category by HTTP status code and convert to object
+  const result: Record<string, T[]> = {};
+  for (const [category, items] of groups.entries()) {
+    items.sort((a, b) => {
       const aCode = a.errorCode || 0;
       const bCode = b.errorCode || 0;
       return aCode - bCode;
     });
-  });
+    Object.assign(result, { [category]: items });
+  }
 
-  return groups;
+  return result;
 }

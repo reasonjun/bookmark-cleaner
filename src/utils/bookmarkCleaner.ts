@@ -45,10 +45,13 @@ export async function removeDuplicateBookmarks(
     });
 
     // 첫 번째(가장 오래된) 북마크를 제외한 나머지 삭제
-    for (let i = 1; i < sortedBookmarks.length; i++) {
+    const bookmarksToRemove = sortedBookmarks.slice(1);
+    for (const bookmark of bookmarksToRemove) {
       try {
-        await chrome.bookmarks.remove(sortedBookmarks[i].id);
-        removedCount++;
+        if (bookmark?.id) {
+          await chrome.bookmarks.remove(bookmark.id);
+          removedCount++;
+        }
       } catch (error) {
         console.error(`Failed to remove duplicate bookmark:`, error);
       }

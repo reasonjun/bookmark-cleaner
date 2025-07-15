@@ -65,7 +65,11 @@ export function updateItemCheckState(
   isChecked: boolean
 ): SelectableCleanupResult {
   if (category === 'emptyFolders') {
-    const updatedCategory = selectableResult[category].map(item => {
+    const updatedCategory = (
+      selectableResult[
+        category as keyof SelectableCleanupResult
+      ] as (chrome.bookmarks.BookmarkTreeNode & { isChecked: boolean })[]
+    ).map(item => {
       return item.id === id ? { ...item, isChecked } : item;
     });
     return {
@@ -73,7 +77,11 @@ export function updateItemCheckState(
       [category]: updatedCategory,
     };
   } else if (category === 'duplicateUrls') {
-    const updatedCategory = selectableResult[category].map(item => {
+    const updatedCategory = (
+      selectableResult[
+        category as keyof SelectableCleanupResult
+      ] as (DuplicateBookmark & { isChecked: boolean })[]
+    ).map(item => {
       return item.url === id ? { ...item, isChecked } : item;
     });
     return {
@@ -81,7 +89,11 @@ export function updateItemCheckState(
       [category]: updatedCategory,
     };
   } else if (category === 'errorPages') {
-    const updatedCategory = selectableResult[category].map(item => {
+    const updatedCategory = (
+      selectableResult[
+        category as keyof SelectableCleanupResult
+      ] as (ErrorPageBookmark & { isChecked: boolean })[]
+    ).map(item => {
       return item.bookmark.id === id ? { ...item, isChecked } : item;
     });
     return {
