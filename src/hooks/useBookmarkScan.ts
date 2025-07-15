@@ -13,6 +13,10 @@ export function useBookmarkScan() {
 
   // 진행률 메시지 리스너 설정
   useEffect(() => {
+    if (typeof chrome === 'undefined' || !chrome.runtime?.onMessage) {
+      return;
+    }
+
     const handleMessage = (message: ScanProgressMessage) => {
       if (message.action === 'scan_progress') {
         setScanProgress(message.progress);

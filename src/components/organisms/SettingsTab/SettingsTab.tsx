@@ -28,7 +28,7 @@ export const SettingsTab = ({
 
   return (
     <div className="cleanup-control-panel">
-      <h3 className="cleanup-control-panel__title">정리 옵션</h3>
+      <h2 className="cleanup-control-panel__title">정리 옵션</h2>
 
       <div className="cleanup-control-panel__options">
         <label

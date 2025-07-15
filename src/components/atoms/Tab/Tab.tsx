@@ -9,6 +9,8 @@ export interface TabProps {
   disabled?: boolean;
   /** 클릭 핸들러 */
   onClick?: () => void;
+  /** 키보드 이벤트 핸들러 */
+  onKeyDown?: (event: React.KeyboardEvent) => void;
   /** 아이콘 */
   icon?: ReactNode;
   /** 뱃지 */
@@ -26,6 +28,7 @@ export const Tab = ({
   active = false,
   disabled = false,
   onClick,
+  onKeyDown,
   icon,
   badge,
   id,
@@ -44,6 +47,7 @@ export const Tab = ({
       id={id}
       className={classNames}
       onClick={onClick}
+      onKeyDown={onKeyDown}
       disabled={disabled}
       role="tab"
       aria-selected={active}

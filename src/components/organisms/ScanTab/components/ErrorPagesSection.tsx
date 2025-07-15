@@ -84,6 +84,7 @@ export const ErrorPagesSection = ({
                       rel="noopener noreferrer"
                       onClick={e => e.stopPropagation()}
                       className="error-page-url"
+                      aria-label={`${errorItem.bookmark.title || errorItem.bookmark.url} (새 창에서 열림)`}
                     >
                       {errorItem.bookmark.title || errorItem.bookmark.url}
                     </a>

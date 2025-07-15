@@ -15,7 +15,7 @@ export const ScanResultLoading = ({ scanProgress }: ScanResultLoadingProps) => (
     {scanProgress !== undefined && (
       <div className="scan-result-panel__progress">
         <ProgressBar value={scanProgress} variant="primary" animated striped />
-        <span className="scan-result-panel__progress-text">
+        <span className="scan-result-panel__progress-text" role="status">
           {scanProgress}% 완료
         </span>
       </div>

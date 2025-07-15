@@ -84,7 +84,7 @@ export const ScanTab = ({
 
     return (
       <div className="scan-result-panel">
-        <div className="scan-result-panel__summary">
+        <div className="scan-result-panel__summary" aria-live="polite">
           <h2 className="scan-result-panel__title">스캔 결과</h2>
           <p className="scan-result-panel__subtitle">
             총 {totalIssues}개의 정리 가능한 항목을 발견했습니다.
@@ -129,6 +129,7 @@ export const ScanTab = ({
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={e => e.stopPropagation()}
+                    aria-label={`${duplicateItem.bookmarks[0]?.title || duplicateItem.url} (새 창에서 열림)`}
                   >
                     {duplicateItem.bookmarks[0]?.title || duplicateItem.url}
                   </a>
@@ -170,7 +171,7 @@ export const ScanTab = ({
 
         {!isScanning && selectableCleanupItems && (
           <>
-            <p className="main__selection-status">
+            <p className="main__selection-status" role="status">
               {checkedIssuesCount > 0
                 ? `${checkedIssuesCount}개 선택됨`
                 : '아무것도 선택되지 않았습니다.'}

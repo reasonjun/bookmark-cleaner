@@ -33,11 +33,7 @@ export const Section = ({
     <div
       className={`section-component ${isDisabled ? 'section-component--disabled' : ''}`}
     >
-      <div
-        className="section-component__header"
-        role={isDisabled ? undefined : 'button'} // 비활성화 시 role 제거
-        aria-disabled={isDisabled} // 접근성 처리
-      >
+      <div className="section-component__header">
         {onSelectAllChange && (
           <Checkbox
             checked={allChecked}

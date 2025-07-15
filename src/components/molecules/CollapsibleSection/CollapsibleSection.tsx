@@ -29,8 +29,15 @@ export const CollapsibleSection = ({
     }
   };
 
+  const countText = count !== undefined ? ` (${count}개 항목)` : '';
+  const sectionDescription = `${title} 섹션${countText} 펼치기/접기`;
+
   return (
-    <details className="collapsible-section" open={initialOpen}>
+    <details
+      className="collapsible-section"
+      open={initialOpen}
+      aria-label={sectionDescription}
+    >
       <summary className="collapsible-section__header">
         {onSelectAllChange && (
           <Checkbox
@@ -58,6 +65,7 @@ export const CollapsibleSection = ({
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            aria-hidden="true"
           >
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>

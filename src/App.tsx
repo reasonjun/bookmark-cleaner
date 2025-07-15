@@ -92,7 +92,12 @@ function App() {
       />
 
       <div className="main__content">
-        <div className="main__tab-panel">
+        <div
+          className="main__tab-panel"
+          role="tabpanel"
+          id={`tab-panel-${activeTab}`}
+          aria-labelledby={`tab-${activeTab}`}
+        >
           {activeTab === 'scan' && (
             <ScanTab
               selectableCleanupItems={selectableCleanupItems}

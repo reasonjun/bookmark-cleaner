@@ -1,6 +1,6 @@
 import './TabGroup.css';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type KeyboardEvent } from 'react';
 
 import type { TabItem } from '@/types/components';
 
@@ -49,6 +49,49 @@ export const TabGroup = ({
     onChange?.(tabId);
   };
 
+  const handleKeyDown = (event: KeyboardEvent, tabId: string) => {
+    const enabledTabs = tabs.filter(tab => !tab.disabled);
+    const currentIndex = enabledTabs.findIndex(tab => tab.id === tabId);
+    let targetTab: TabItem | null = null;
+
+    switch (event.key) {
+      case 'ArrowLeft':
+        event.preventDefault();
+        targetTab =
+          enabledTabs[
+            currentIndex > 0 ? currentIndex - 1 : enabledTabs.length - 1
+          ];
+        break;
+      case 'ArrowRight':
+        event.preventDefault();
+        targetTab =
+          enabledTabs[
+            currentIndex < enabledTabs.length - 1 ? currentIndex + 1 : 0
+          ];
+        break;
+      case 'Home':
+        event.preventDefault();
+        targetTab = enabledTabs[0];
+        break;
+      case 'End':
+        event.preventDefault();
+        targetTab = enabledTabs[enabledTabs.length - 1];
+        break;
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+        handleTabClick(tabId);
+        return;
+      default:
+        return;
+    }
+
+    if (targetTab) {
+      const nextTabElement = document.getElementById(`tab-${targetTab.id}`);
+      nextTabElement?.focus();
+    }
+  };
+
   const classNames = ['tab-group', fullWidth && 'tab-group--full-width']
     .filter(Boolean)
     .join(' ');
@@ -62,7 +105,8 @@ export const TabGroup = ({
           active={currentActiveTab === tab.id}
           disabled={tab.disabled}
           onClick={() => handleTabClick(tab.id)}
-          ariaControls={`tabpanel-${tab.id}`}
+          onKeyDown={event => handleKeyDown(event, tab.id)}
+          ariaControls={`tab-panel-${tab.id}`}
         >
           {tab.label}
         </Tab>

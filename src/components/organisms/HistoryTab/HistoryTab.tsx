@@ -24,10 +24,10 @@ export const HistoryTab = () => {
     <>
       {cleanupHistory.length > 0 ? (
         <div className="main__history">
-          <h3>정리 이력</h3>
+          <h2>정리 이력</h2>
           {cleanupHistory.map(history => (
             <div key={history.timestamp} className="main__history-item">
-              <h4>{new Date(history.timestamp).toLocaleString()}</h4>
+              <h3>{new Date(history.timestamp).toLocaleString()}</h3>
               <ul className="main__history-list">
                 <li>빈 폴더 {history.stats.emptyFoldersRemoved}개 제거</li>
                 <li>중복 북마크 {history.stats.duplicatesRemoved}개 제거</li>

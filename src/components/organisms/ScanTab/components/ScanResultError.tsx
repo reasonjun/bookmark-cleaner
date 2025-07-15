@@ -5,7 +5,7 @@ interface ScanResultErrorProps {
 }
 
 export const ScanResultError = ({ error }: ScanResultErrorProps) => (
-  <div className="scan-result-panel scan-result-panel--error">
+  <div className="scan-result-panel scan-result-panel--error" role="alert">
     <ErrorIcon />
     <p>{error}</p>
   </div>
