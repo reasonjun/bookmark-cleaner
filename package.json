@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "test": "vitest --watch"
+    "test": "vitest"
   },
   "dependencies": {
     "@reasonjun/design-system-app": "^0.0.1",
