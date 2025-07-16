@@ -1,6 +1,6 @@
 import './Tab.css';
 
-import type { ReactNode } from 'react';
+import type { KeyboardEvent, ReactNode } from 'react';
 
 export interface TabProps {
   /** 활성화 상태 */
@@ -10,7 +10,7 @@ export interface TabProps {
   /** 클릭 핸들러 */
   onClick?: () => void;
   /** 키보드 이벤트 핸들러 */
-  onKeyDown?: (event: React.KeyboardEvent) => void;
+  onKeyDown?: (event: KeyboardEvent) => void;
   /** 아이콘 */
   icon?: ReactNode;
   /** 뱃지 */

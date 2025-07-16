@@ -94,5 +94,3 @@ export const SettingsTab = ({
     </div>
   );
 };
-
-export default SettingsTab;

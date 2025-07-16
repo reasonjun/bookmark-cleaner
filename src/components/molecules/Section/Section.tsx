@@ -9,7 +9,7 @@ interface SectionProps {
   allChecked?: boolean;
   someChecked?: boolean;
   onSelectAllChange?: (isChecked: boolean) => void;
-  children: ReactNode; // children prop 명시적으로 추가
+  children?: ReactNode; // children prop 명시적으로 추가
 }
 
 export const Section = ({

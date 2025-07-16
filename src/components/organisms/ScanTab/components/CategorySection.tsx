@@ -1,4 +1,5 @@
 import { Checkbox } from '@reasonjun/design-system-app';
+import type { ReactNode } from 'react';
 
 import { CollapsibleSection, Section } from '@/components';
 import type { SelectableCleanupResult } from '@/types/bookmark';
@@ -17,7 +18,7 @@ interface CategorySectionProps {
     id: string,
     checked: boolean
   ) => void;
-  renderItem: (item: SelectableItemUnion) => React.ReactNode;
+  renderItem: (item: SelectableItemUnion) => ReactNode;
 }
 
 export const CategorySection = ({

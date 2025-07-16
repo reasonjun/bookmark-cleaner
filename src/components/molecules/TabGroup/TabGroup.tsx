@@ -1,6 +1,6 @@
 import './TabGroup.css';
 
-import { useEffect, useState, type KeyboardEvent } from 'react';
+import { type KeyboardEvent, useEffect, useState } from 'react';
 
 import type { TabItem } from '@/types/components';
 
