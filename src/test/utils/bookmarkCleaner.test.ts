@@ -369,7 +369,7 @@ describe('bookmarkCleaner', () => {
 
       await expect(
         restoreBookmarks(JSON.stringify(invalidBackup))
-      ).rejects.toThrow('Invalid backup format');
+      ).rejects.toThrow('백업 파일의 북마크 데이터가 올바르지 않습니다.');
 
       consoleSpy.mockRestore();
     });

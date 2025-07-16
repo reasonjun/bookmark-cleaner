@@ -128,6 +128,7 @@ describe('BookmarkService', () => {
         method: 'HEAD',
         mode: 'cors',
         cache: 'no-cache',
+        signal: expect.any(AbortSignal),
       });
     });
 
@@ -198,6 +199,7 @@ describe('BookmarkService', () => {
           method: 'HEAD',
           mode: 'cors',
           cache: 'no-cache',
+          signal: expect.any(AbortSignal),
         }
       );
       expect(global.fetch).toHaveBeenNthCalledWith(
@@ -207,6 +209,7 @@ describe('BookmarkService', () => {
           method: 'GET',
           mode: 'cors',
           cache: 'no-cache',
+          signal: expect.any(AbortSignal),
         }
       );
     });
@@ -232,6 +235,7 @@ describe('BookmarkService', () => {
         method: 'GET',
         mode: 'no-cors',
         cache: 'no-cache',
+        signal: expect.any(AbortSignal),
       });
     });
 
