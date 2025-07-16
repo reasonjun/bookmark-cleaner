@@ -1,3 +1,5 @@
+// noinspection JSUnresolvedReference
+
 import js from '@eslint/js';
 import prettierConfig from 'eslint-config-prettier';
 import importPlugin from 'eslint-plugin-import';
@@ -13,6 +15,7 @@ import unusedImports from 'eslint-plugin-unused-imports';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
+// noinspection JSUnresolvedReference
 export default tseslint.config([
   { ignores: ['dist', 'node_modules'] },
   {
@@ -22,11 +25,11 @@ export default tseslint.config([
       ...tseslint.configs.recommended,
       prettierConfig,
     ],
+    ...jsxA11y.flatConfigs.recommended,
     plugins: {
       react,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
-      'jsx-a11y': jsxA11y,
       sonarjs,
       security,
       import: importPlugin,
@@ -35,6 +38,7 @@ export default tseslint.config([
       prettier,
     },
     languageOptions: {
+      ...jsxA11y.flatConfigs.recommended.languageOptions,
       ecmaVersion: 2020,
       globals: globals.browser,
       parserOptions: {
@@ -51,7 +55,6 @@ export default tseslint.config([
     rules: {
       'prettier/prettier': 'error',
       ...reactHooks.configs.recommended.rules,
-      ...jsxA11y.configs.recommended.rules,
       ...react.configs.recommended.rules,
       ...sonarjs.configs.recommended.rules,
       ...security.configs.recommended.rules,
