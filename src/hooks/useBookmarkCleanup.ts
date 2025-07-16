@@ -36,8 +36,7 @@ export function useBookmarkCleanup() {
     if (!chrome.runtime?.id) return;
 
     try {
-      const backupData = await chromeMessageService.requestBackup();
-      return backupData;
+      return await chromeMessageService.requestBackup();
     } catch (error) {
       console.error('Backup failed:', error);
       throw error;
