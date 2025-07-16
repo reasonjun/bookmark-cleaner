@@ -14,21 +14,36 @@ import {
 describe('dataTransformers', () => {
   const mockCleanupResult: CleanupResult = {
     emptyFolders: [
-      { id: '1', title: 'Empty Folder 1', parentId: '0' },
-      { id: '2', title: 'Empty Folder 2', parentId: '0' },
+      { id: '1', title: 'Empty Folder 1', parentId: '0', syncing: false },
+      { id: '2', title: 'Empty Folder 2', parentId: '0', syncing: false },
     ],
     duplicateUrls: [
       {
         url: 'https://google.com',
         bookmarks: [
-          { id: '3', title: 'Google 1', url: 'https://google.com' },
-          { id: '4', title: 'Google 2', url: 'https://google.com' },
+          {
+            id: '3',
+            title: 'Google 1',
+            url: 'https://google.com',
+            syncing: false,
+          },
+          {
+            id: '4',
+            title: 'Google 2',
+            url: 'https://google.com',
+            syncing: false,
+          },
         ],
       },
     ],
     errorPages: [
       {
-        bookmark: { id: '5', title: 'Error Page', url: 'https://error.com' },
+        bookmark: {
+          id: '5',
+          title: 'Error Page',
+          url: 'https://error.com',
+          syncing: false,
+        },
         errorCode: 404,
         errorMessage: 'HTTP 404',
       },
@@ -63,8 +78,20 @@ describe('dataTransformers', () => {
     it('should filter only checked items', () => {
       const selectableResult: SelectableCleanupResult = {
         emptyFolders: [
-          { id: '1', title: 'Empty Folder 1', parentId: '0', isChecked: true },
-          { id: '2', title: 'Empty Folder 2', parentId: '0', isChecked: false },
+          {
+            id: '1',
+            title: 'Empty Folder 1',
+            parentId: '0',
+            syncing: false,
+            isChecked: true,
+          },
+          {
+            id: '2',
+            title: 'Empty Folder 2',
+            parentId: '0',
+            syncing: false,
+            isChecked: false,
+          },
         ],
         duplicateUrls: [
           {
@@ -75,7 +102,7 @@ describe('dataTransformers', () => {
         ],
         errorPages: [
           {
-            bookmark: { id: '5', title: 'Error Page' },
+            bookmark: { id: '5', title: 'Error Page', syncing: false },
             errorCode: 404,
             errorMessage: 'HTTP 404',
             isChecked: false,
@@ -95,7 +122,13 @@ describe('dataTransformers', () => {
     it('should return empty arrays when nothing is checked', () => {
       const selectableResult: SelectableCleanupResult = {
         emptyFolders: [
-          { id: '1', title: 'Empty Folder 1', parentId: '0', isChecked: false },
+          {
+            id: '1',
+            title: 'Empty Folder 1',
+            parentId: '0',
+            syncing: false,
+            isChecked: false,
+          },
         ],
         duplicateUrls: [
           {
@@ -106,7 +139,7 @@ describe('dataTransformers', () => {
         ],
         errorPages: [
           {
-            bookmark: { id: '5', title: 'Error Page' },
+            bookmark: { id: '5', title: 'Error Page', syncing: false },
             errorCode: 404,
             errorMessage: 'HTTP 404',
             isChecked: false,
@@ -126,8 +159,20 @@ describe('dataTransformers', () => {
     it('should calculate total checked items', () => {
       const selectableResult: SelectableCleanupResult = {
         emptyFolders: [
-          { id: '1', title: 'Empty Folder 1', parentId: '0', isChecked: true },
-          { id: '2', title: 'Empty Folder 2', parentId: '0', isChecked: false },
+          {
+            id: '1',
+            title: 'Empty Folder 1',
+            parentId: '0',
+            syncing: false,
+            isChecked: true,
+          },
+          {
+            id: '2',
+            title: 'Empty Folder 2',
+            parentId: '0',
+            syncing: false,
+            isChecked: false,
+          },
         ],
         duplicateUrls: [
           {
@@ -138,7 +183,7 @@ describe('dataTransformers', () => {
         ],
         errorPages: [
           {
-            bookmark: { id: '5', title: 'Error Page' },
+            bookmark: { id: '5', title: 'Error Page', syncing: false },
             errorCode: 404,
             errorMessage: 'HTTP 404',
             isChecked: true,
@@ -158,7 +203,13 @@ describe('dataTransformers', () => {
     it('should return 0 when nothing is checked', () => {
       const selectableResult: SelectableCleanupResult = {
         emptyFolders: [
-          { id: '1', title: 'Empty Folder 1', parentId: '0', isChecked: false },
+          {
+            id: '1',
+            title: 'Empty Folder 1',
+            parentId: '0',
+            syncing: false,
+            isChecked: false,
+          },
         ],
         duplicateUrls: [],
         errorPages: [],
@@ -173,8 +224,20 @@ describe('dataTransformers', () => {
     it('should update emptyFolders check state by id', () => {
       const selectableResult: SelectableCleanupResult = {
         emptyFolders: [
-          { id: '1', title: 'Empty Folder 1', parentId: '0', isChecked: true },
-          { id: '2', title: 'Empty Folder 2', parentId: '0', isChecked: true },
+          {
+            id: '1',
+            title: 'Empty Folder 1',
+            parentId: '0',
+            syncing: false,
+            isChecked: true,
+          },
+          {
+            id: '2',
+            title: 'Empty Folder 2',
+            parentId: '0',
+            syncing: false,
+            isChecked: true,
+          },
         ],
         duplicateUrls: [],
         errorPages: [],
@@ -217,7 +280,13 @@ describe('dataTransformers', () => {
     it('should not modify other categories', () => {
       const selectableResult: SelectableCleanupResult = {
         emptyFolders: [
-          { id: '1', title: 'Empty Folder 1', parentId: '0', isChecked: true },
+          {
+            id: '1',
+            title: 'Empty Folder 1',
+            parentId: '0',
+            syncing: false,
+            isChecked: true,
+          },
         ],
         duplicateUrls: [
           {

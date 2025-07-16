@@ -13,15 +13,18 @@ describe('fileDownloader', () => {
     vi.clearAllMocks();
 
     // Mock DOM APIs
-    global.URL = {
+    vi.stubGlobal('URL', {
       createObjectURL: mockCreateObjectURL,
       revokeObjectURL: mockRevokeObjectURL,
-    } as typeof URL;
+    });
 
-    global.Blob = vi.fn().mockImplementation((content, options) => ({
-      content,
-      options,
-    })) as typeof Blob;
+    vi.stubGlobal(
+      'Blob',
+      vi.fn().mockImplementation((content, options) => ({
+        content,
+        options,
+      }))
+    );
 
     const mockAElement = {
       href: '',
@@ -30,9 +33,9 @@ describe('fileDownloader', () => {
     };
 
     mockCreateElement.mockReturnValue(mockAElement);
-    global.document = {
+    vi.stubGlobal('document', {
       createElement: mockCreateElement,
-    } as typeof document;
+    });
 
     mockCreateObjectURL.mockReturnValue('mock-object-url');
   });

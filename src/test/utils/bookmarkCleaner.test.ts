@@ -199,22 +199,49 @@ describe('bookmarkCleaner', () => {
     it('should perform complete cleanup and return stats', async () => {
       const itemsToCleanup: SelectableCleanupResult = {
         emptyFolders: [
-          { id: '1', title: 'Empty', parentId: '0', isChecked: true },
-          { id: '2', title: 'Not Selected', parentId: '0', isChecked: false },
+          {
+            id: '1',
+            title: 'Empty',
+            parentId: '0',
+            isChecked: true,
+            syncing: false,
+          },
+          {
+            id: '2',
+            title: 'Not Selected',
+            parentId: '0',
+            isChecked: false,
+            syncing: false,
+          },
         ],
         duplicateUrls: [
           {
             url: 'https://example.com',
             bookmarks: [
-              { id: '3', title: 'Dup1', dateAdded: 1640000000000 },
-              { id: '4', title: 'Dup2', dateAdded: 1640000001000 },
+              {
+                id: '3',
+                title: 'Dup1',
+                dateAdded: 1640000000000,
+                syncing: false,
+              },
+              {
+                id: '4',
+                title: 'Dup2',
+                dateAdded: 1640000001000,
+                syncing: false,
+              },
             ],
             isChecked: true,
           },
         ],
         errorPages: [
           {
-            bookmark: { id: '5', title: 'Error', url: 'https://error.com' },
+            bookmark: {
+              id: '5',
+              title: 'Error',
+              url: 'https://error.com',
+              syncing: false,
+            },
             isChecked: true,
           },
           {
@@ -222,6 +249,7 @@ describe('bookmarkCleaner', () => {
               id: '6',
               title: 'Not Selected',
               url: 'https://error2.com',
+              syncing: false,
             },
             isChecked: false,
           },
@@ -243,7 +271,13 @@ describe('bookmarkCleaner', () => {
     it('should skip unchecked items', async () => {
       const itemsToCleanup: SelectableCleanupResult = {
         emptyFolders: [
-          { id: '1', title: 'Empty', parentId: '0', isChecked: false },
+          {
+            id: '1',
+            title: 'Empty',
+            parentId: '0',
+            isChecked: false,
+            syncing: false,
+          },
         ],
         duplicateUrls: [],
         errorPages: [],

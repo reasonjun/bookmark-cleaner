@@ -151,12 +151,19 @@ export async function restoreBookmarks(backupJson: string): Promise<void> {
     return;
   }
 
+  let backup;
   try {
-    const backup = JSON.parse(backupJson);
-    if (!backup.bookmarks || !Array.isArray(backup.bookmarks)) {
-      throw new Error('Invalid backup format');
-    }
+    backup = JSON.parse(backupJson);
+  } catch (error) {
+    console.error('Failed to parse backup JSON:', error);
+    throw new Error('백업 파일 형식이 올바르지 않습니다.');
+  }
 
+  if (!backup.bookmarks || !Array.isArray(backup.bookmarks)) {
+    throw new Error('백업 파일의 북마크 데이터가 올바르지 않습니다.');
+  }
+
+  try {
     // 현재 북마크 모두 삭제 (루트 폴더 제외)
     const currentTree = await chrome.bookmarks.getTree();
     await clearBookmarks(currentTree[0]);

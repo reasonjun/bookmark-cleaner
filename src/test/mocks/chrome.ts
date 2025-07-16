@@ -77,8 +77,12 @@ export const mockBookmarkTree = [
 export const mockChrome = {
   bookmarks: {
     getTree: vi.fn().mockResolvedValue(mockBookmarkTree),
-    remove: vi.fn().mockResolvedValue(undefined),
-    removeTree: vi.fn().mockResolvedValue(undefined),
+    remove: vi.fn().mockImplementation((_id, callback) => {
+      callback?.();
+    }),
+    removeTree: vi.fn().mockImplementation((_id, callback) => {
+      callback?.();
+    }),
     create: vi.fn().mockImplementation(details =>
       Promise.resolve({
         id: crypto.randomUUID(),
@@ -120,6 +124,7 @@ export const mockChrome = {
     onMessage: {
       addListener: vi.fn(),
     },
+    lastError: undefined as { message: string } | undefined,
   },
   action: {
     onClicked: {
@@ -135,4 +140,5 @@ export function setupChromeMock() {
 
 export function resetChromeMock() {
   vi.clearAllMocks();
+  mockChrome.runtime.lastError = undefined;
 }
