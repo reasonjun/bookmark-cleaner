@@ -61,31 +61,63 @@ export class BookmarkService {
   async checkUrlStatus(
     url: string
   ): Promise<{ accessible: boolean; errorCode?: number }> {
-    try {
-      const response = await fetch(url, {
-        method: 'HEAD',
-        mode: 'cors', // CORS 모드로 변경하여 status code 확인 가능
-      });
+    const TEN_SECONDS = 10000;
+    const signal = AbortSignal.timeout(TEN_SECONDS);
 
-      // 400번대와 500번대 상태 코드는 에러 페이지로 분류
+    // 공통 응답 처리 함수
+    const processResponse = (response: Response) => {
       if (response.status >= 400 && response.status < 600) {
         return { accessible: false, errorCode: response.status };
       }
-
       return { accessible: true };
-    } catch {
-      // 네트워크 에러나 CORS 에러가 발생하면 다시 no-cors 모드로 시도
+    };
+
+    // 각 시도를 위한 설정
+    const attempts = [
+      { method: 'HEAD', mode: 'cors' as RequestMode },
+      { method: 'GET', mode: 'cors' as RequestMode },
+      { method: 'GET', mode: 'no-cors' as RequestMode },
+    ];
+
+    for (const attempt of attempts) {
       try {
-        await fetch(url, {
-          method: 'HEAD',
-          mode: 'no-cors',
+        const response = await fetch(url, {
+          ...attempt,
+          cache: 'no-cache',
+          signal,
         });
-        // no-cors 모드에서 성공하면 접근 가능한 것으로 판단
-        return { accessible: true };
+
+        // no-cors 모드에서는 상태 코드를 확인할 수 없으므로 성공으로 간주
+        if (attempt.mode === 'no-cors') {
+          return { accessible: true };
+        }
+
+        return processResponse(response);
       } catch {
+        // 마지막 시도가 아니면 다음 시도로 넘어감
+        if (attempt !== attempts[attempts.length - 1]) {
+          continue;
+        }
+
+        // 모든 시도가 실패했을 때
         return { accessible: false, errorCode: 0 };
       }
     }
+
+    return { accessible: false, errorCode: 0 };
+  }
+
+  /**
+   * 오프라인 상태를 확인하고 진행률을 완료 처리합니다.
+   */
+  private checkOfflineAndComplete(
+    onProgress?: (progress: number) => void
+  ): boolean {
+    if (!navigator.onLine) {
+      onProgress?.(100);
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -95,6 +127,11 @@ export class BookmarkService {
     bookmarks?: chrome.bookmarks.BookmarkTreeNode[],
     onProgress?: (progress: number) => void
   ): Promise<ErrorPageBookmark[]> {
+    // 시작 전 온라인 상태 체크
+    if (this.checkOfflineAndComplete(onProgress)) {
+      return [];
+    }
+
     // 북마크가 제공되지 않으면 전체 북마크에서 추출
     if (!bookmarks) {
       const bookmarkTree = await this.getBookmarkTree();
@@ -104,10 +141,15 @@ export class BookmarkService {
     const errorPages: ErrorPageBookmark[] = [];
 
     // 배치로 처리 (한 번에 너무 많은 HTTP 요청을 보내지 않도록)
-    const batchSize = 5;
+    const batchSize = 10;
     const totalBookmarks = bookmarks.length;
 
     for (let i = 0; i < bookmarks.length; i += batchSize) {
+      // 배치 시작 전 온라인 상태 체크
+      if (this.checkOfflineAndComplete(onProgress)) {
+        break;
+      }
+
       const batch = bookmarks.slice(i, i + batchSize);
       const results = await Promise.all(
         batch.map(async bookmark => {
@@ -147,14 +189,28 @@ export class BookmarkService {
    * 북마크를 제거합니다.
    */
   async removeBookmark(bookmarkId: string): Promise<void> {
-    await chrome.bookmarks.remove(bookmarkId);
+    return new Promise((resolve, reject) => {
+      chrome.bookmarks.remove(bookmarkId, () => {
+        if (chrome.runtime.lastError) {
+          return reject(new Error(chrome.runtime.lastError.message));
+        }
+        resolve();
+      });
+    });
   }
 
   /**
    * 북마크 폴더를 제거합니다.
    */
   async removeBookmarkFolder(folderId: string): Promise<void> {
-    await chrome.bookmarks.removeTree(folderId);
+    return new Promise((resolve, reject) => {
+      chrome.bookmarks.removeTree(folderId, () => {
+        if (chrome.runtime.lastError) {
+          return reject(new Error(chrome.runtime.lastError.message));
+        }
+        resolve();
+      });
+    });
   }
 
   /**

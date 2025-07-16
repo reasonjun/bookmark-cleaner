@@ -84,9 +84,13 @@ async function handleMessage(message: ChromeMessageType) {
 
 // 확장 프로그램 아이콘 클릭시 새 탭에서 앱 열기
 chrome.action.onClicked.addListener(() => {
-  chrome.tabs.create({
-    url: chrome.runtime.getURL('index.html'),
-  });
+  chrome.tabs
+    .create({
+      url: chrome.runtime.getURL('index.html'),
+    })
+    .catch(error => {
+      console.error('Failed to create tab:', error);
+    });
 });
 
 export {};

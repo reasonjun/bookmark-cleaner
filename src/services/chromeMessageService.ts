@@ -10,14 +10,18 @@ export class ChromeMessageService {
    * 백그라운드 스크립트에 스캔 요청을 보냅니다.
    */
   async requestScan(options: CleanupOptions): Promise<CleanupResult> {
-    const response = await chrome.runtime.sendMessage({
-      action: 'scan',
-      options,
+    return new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage({ action: 'scan', options }, response => {
+        if (chrome.runtime.lastError) {
+          return reject(new Error(chrome.runtime.lastError.message));
+        }
+        if (response && response.success) {
+          resolve(response.result);
+        } else {
+          reject(new Error(response?.error || 'Scan failed'));
+        }
+      });
     });
-    if (response.success) {
-      return response.result;
-    }
-    throw new Error('Scan failed');
   }
 
   /**
@@ -30,29 +34,42 @@ export class ChromeMessageService {
     stats: CleanupStats;
     updatedResult: CleanupResult;
   }> {
-    const response = await chrome.runtime.sendMessage({
-      action: 'cleanup',
-      items,
-      options,
+    return new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage(
+        { action: 'cleanup', items, options },
+        response => {
+          if (chrome.runtime.lastError) {
+            return reject(new Error(chrome.runtime.lastError.message));
+          }
+          if (response && response.success) {
+            resolve({
+              stats: response.stats,
+              updatedResult: response.updatedResult,
+            });
+          } else {
+            reject(new Error(response?.error || 'Cleanup failed'));
+          }
+        }
+      );
     });
-    if (response.success) {
-      return {
-        stats: response.stats,
-        updatedResult: response.updatedResult,
-      };
-    }
-    throw new Error('Cleanup failed');
   }
 
   /**
    * 백그라운드 스크립트에 백업 요청을 보냅니다.
    */
   async requestBackup(): Promise<string> {
-    const response = await chrome.runtime.sendMessage({ action: 'backup' });
-    if (response.success) {
-      return response.backupData;
-    }
-    throw new Error('Backup failed');
+    return new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage({ action: 'backup' }, response => {
+        if (chrome.runtime.lastError) {
+          return reject(new Error(chrome.runtime.lastError.message));
+        }
+        if (response && response.success) {
+          resolve(response.backupData);
+        } else {
+          reject(new Error(response?.error || 'Backup failed'));
+        }
+      });
+    });
   }
 }
 
