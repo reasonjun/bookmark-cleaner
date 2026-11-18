@@ -12,7 +12,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@reasonjun/design-system-app": "^0.0.1",
+    "@reasonjun/design-system-app": "^0.2.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
