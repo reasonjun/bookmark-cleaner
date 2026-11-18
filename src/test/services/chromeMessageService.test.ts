@@ -4,6 +4,8 @@ import { ChromeMessageService } from '@/services/chromeMessageService.ts';
 
 import { mockChrome, resetChromeMock, setupChromeMock } from '../mocks/chrome';
 
+const noop = () => {};
+
 describe('ChromeMessageService', () => {
   let chromeMessageService: ChromeMessageService;
 
@@ -223,6 +225,82 @@ describe('ChromeMessageService', () => {
       await expect(
         chromeMessageService.requestScan(mockOptions)
       ).rejects.toThrow();
+    });
+  });
+
+  describe('확장 프로그램 환경이 아닐 때', () => {
+    beforeEach(() => {
+      // 일반 Chrome 탭: chrome 객체는 있지만 runtime이 없다
+      global.chrome = {} as typeof chrome;
+    });
+
+    it('requestScan은 알아볼 수 있는 에러로 거부한다', async () => {
+      await expect(
+        chromeMessageService.requestScan({
+          removeEmptyFolders: true,
+          removeDuplicates: true,
+          removeErrorPages: true,
+        })
+      ).rejects.toThrow('확장 프로그램');
+    });
+
+    it('requestBackup은 알아볼 수 있는 에러로 거부한다', async () => {
+      await expect(chromeMessageService.requestBackup()).rejects.toThrow(
+        '확장 프로그램'
+      );
+    });
+
+    it('onScanProgress는 에러 없이 해제 함수를 돌려준다', () => {
+      const unsubscribe = chromeMessageService.onScanProgress(() => {});
+      expect(() => unsubscribe()).not.toThrow();
+    });
+
+    it('웹 페이지용 runtime(sendMessage만 있고 id·onMessage 없음)도 확장 밖으로 본다', async () => {
+      // externally_connectable 확장이 설치돼 있으면 일반 페이지에도 이런 runtime이 노출된다
+      global.chrome = {
+        runtime: { sendMessage: () => {} },
+      } as unknown as typeof chrome;
+
+      expect(() => chromeMessageService.onScanProgress(noop)).not.toThrow();
+      await expect(chromeMessageService.requestBackup()).rejects.toThrow(
+        '확장 프로그램'
+      );
+    });
+
+    it('chrome 전역이 아예 없어도 알아볼 수 있는 에러로 거부한다', async () => {
+      global.chrome = undefined as unknown as typeof chrome;
+
+      expect(() => chromeMessageService.onScanProgress(noop)).not.toThrow();
+      await expect(
+        chromeMessageService.requestCleanup(
+          {},
+          {
+            removeEmptyFolders: true,
+            removeDuplicates: true,
+            removeErrorPages: true,
+          }
+        )
+      ).rejects.toThrow('확장 프로그램');
+    });
+  });
+
+  describe('onScanProgress', () => {
+    it('scan_progress 메시지의 진행률만 콜백에 전달하고 해제할 수 있다', () => {
+      const progress: number[] = [];
+      const unsubscribe = chromeMessageService.onScanProgress(p =>
+        progress.push(p)
+      );
+
+      const listener =
+        mockChrome.runtime.onMessage.addListener.mock.calls[0][0];
+      listener({ action: 'scan_progress', progress: 40 });
+      listener({ action: 'other', progress: 99 });
+      expect(progress).toEqual([40]);
+
+      unsubscribe();
+      expect(mockChrome.runtime.onMessage.removeListener).toHaveBeenCalledWith(
+        listener
+      );
     });
   });
 });

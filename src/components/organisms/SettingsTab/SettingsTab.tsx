@@ -9,6 +9,7 @@ interface SettingsTabProps {
   options: CleanupOptions;
   onOptionsChange: (options: CleanupOptions) => void;
   onBackup: () => void;
+  backupError?: string;
   isProcessing: boolean;
 }
 
@@ -16,6 +17,7 @@ export const SettingsTab = ({
   options,
   onOptionsChange,
   onBackup,
+  backupError,
   isProcessing,
 }: SettingsTabProps) => {
   const handleOptionChange =
@@ -87,6 +89,12 @@ export const SettingsTab = ({
           백업 생성
         </Button>
       </div>
+
+      {backupError && (
+        <p className="cleanup-control-panel__error" role="alert">
+          {backupError}
+        </p>
+      )}
 
       <p className="cleanup-control-panel__info">
         💡 정리하기 전에 백업을 생성하는 것을 권장합니다.

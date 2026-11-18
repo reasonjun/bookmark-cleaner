@@ -19,6 +19,7 @@ interface ScanTabProps {
   isScanning: boolean;
   scanProgress?: number;
   error?: string;
+  cleanupError?: string;
   checkedIssuesCount: number;
   onScan: () => void;
   onCleanup: () => void;
@@ -34,6 +35,7 @@ export const ScanTab = ({
   isScanning,
   scanProgress,
   error,
+  cleanupError,
   checkedIssuesCount,
   onScan,
   onCleanup,
@@ -176,6 +178,11 @@ export const ScanTab = ({
                 ? `${checkedIssuesCount}개 선택됨`
                 : '아무것도 선택되지 않았습니다.'}
             </p>
+            {cleanupError && (
+              <p className="main__action-error" role="alert">
+                {cleanupError}
+              </p>
+            )}
             <Button
               variant="primary"
               size="medium"

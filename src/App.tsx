@@ -21,11 +21,19 @@ function App() {
     selectableCleanupItems,
     isScanning,
     scanProgress,
+    scanError,
     scan,
     clearScanResults,
     setSelectableCleanupItems,
   } = useBookmarkScan();
-  const { isProcessing, cleanup, backup } = useBookmarkCleanup();
+  const {
+    isProcessing,
+    cleanupError,
+    backupError,
+    cleanup,
+    backup,
+    clearCleanupError,
+  } = useBookmarkCleanup();
   const [cleanupOptions, setCleanupOptions] = useState<CleanupOptions>(
     DEFAULT_CLEANUP_OPTIONS
   );
@@ -58,13 +66,16 @@ function App() {
   };
 
   const handleScan = async () => {
+    clearCleanupError();
     await scan(cleanupOptions);
   };
 
   const handleCleanup = async () => {
     if (!selectableCleanupItems) return;
 
-    await cleanup(selectableCleanupItems, cleanupOptions);
+    const stats = await cleanup(selectableCleanupItems, cleanupOptions);
+    if (!stats) return;
+
     clearScanResults();
     switchToTab('history');
   };
@@ -103,6 +114,8 @@ function App() {
               selectableCleanupItems={selectableCleanupItems}
               isScanning={isScanning}
               scanProgress={scanProgress}
+              error={scanError ?? undefined}
+              cleanupError={cleanupError ?? undefined}
               checkedIssuesCount={checkedIssuesCount}
               onScan={handleScan}
               onCleanup={handleCleanup}
@@ -115,6 +128,7 @@ function App() {
               options={cleanupOptions}
               onOptionsChange={setCleanupOptions}
               onBackup={handleBackup}
+              backupError={backupError ?? undefined}
               isProcessing={isProcessing}
             />
           )}

@@ -123,6 +123,7 @@ export const mockChrome = {
     sendMessage: vi.fn(),
     onMessage: {
       addListener: vi.fn(),
+      removeListener: vi.fn(),
     },
     lastError: undefined as { message: string } | undefined,
   },

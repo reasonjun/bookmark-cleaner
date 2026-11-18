@@ -70,6 +70,12 @@
   flex: 1;
 }
 
+.cleanup-control-panel__error {
+  margin: 0 0 1rem 0;
+  font-size: 0.875rem;
+  color: var(--color-danger, #ef4444);
+}
+
 .cleanup-control-panel__info {
   margin: 0;
   padding: 0.75rem;
