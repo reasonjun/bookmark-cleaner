@@ -20,10 +20,9 @@ describe('fileDownloader', () => {
 
     vi.stubGlobal(
       'Blob',
-      vi.fn().mockImplementation((content, options) => ({
-        content,
-        options,
-      }))
+      vi.fn(function (content: BlobPart[], options?: BlobPropertyBag) {
+        return { content, options };
+      })
     );
 
     const mockAElement = {
